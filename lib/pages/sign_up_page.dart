@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_application_1/auth_gate.dart';
+import 'package:flutter_application_1/pages/login_page.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -36,31 +39,6 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool _loading = false;
-
-  void _showError(BuildContext context, String err) {
-    showCupertinoDialog(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text(
-          "Error",
-          style: TextStyle(color: CupertinoColors.destructiveRed),
-        ),
-        content: Text(err),
-        actions: [
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: const Text(
-              'Ok',
-              style: TextStyle(color: CupertinoColors.extraLightBackgroundGray),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   String? _emailError;
   String? _nameError;
@@ -119,7 +97,7 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       if (kDebugMode) print(e);
       if (context.mounted) {
-        _showError(context, e.toString());
+        Utils.showError(context, e.toString());
       }
       if (!mounted) return;
       setState(() {
@@ -311,9 +289,13 @@ class _SignUpPageState extends State<SignUpPage> {
                           text: "Login",
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              if (kDebugMode) {
-                                print("Login clicked");
-                              }
+                              Navigator.pushReplacement(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (_) =>
+                                      const AuthGate(destination: LoginPage()),
+                                ),
+                              );
                             },
                           style: TextStyle(decoration: .underline),
                         ),

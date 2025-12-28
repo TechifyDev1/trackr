@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_application_1/auth_gate.dart';
+import 'package:flutter_application_1/pages/sign_up_page.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,6 +17,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
+  bool _loading = false;
   @override
   void initState() {
     super.initState();
@@ -21,132 +26,214 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   @override
+  void dispose() {
+    _passwordController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  String? _emailError;
+  String? _passwordError;
+
+  bool _validate() {
+    bool valid = true;
+
+    if (_emailController.text.isEmpty) {
+      _emailError = "Email is required";
+      valid = false;
+    } else {
+      _emailError = null;
+    }
+
+    if (_passwordController.text.isEmpty) {
+      _passwordError = "Password is required";
+      valid = false;
+    }
+    if (mounted) {
+      setState(() {});
+    }
+    return valid;
+  }
+
+  void login(BuildContext context) async {
+    if (!_validate()) return;
+    if (!mounted) return;
+    setState(() => _loading = true);
+    try {
+      final res = await AuthService.instance.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      if (kDebugMode) print("Success signing up $res");
+      setState(() {
+        _loading = false;
+      });
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (context.mounted) {
+        Utils.showError(context, e.toString());
+      }
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(middle: const Text("Trackr")),
       child: Center(
-        child: Container(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: .center,
-            crossAxisAlignment: .start,
-            children: [
-              Center(
-                child: Text("Welcome Back!", style: TextStyle(fontSize: 24)),
-              ),
-              const SizedBox(height: 10),
-
-              // Email
-              const Text("Email", style: TextStyle(fontSize: 14)),
-              const SizedBox(height: 5),
-              CustomTextInput(
-                nameController: _emailController,
-                placeholder: "johndoe@techify.com",
-                prefixIcon: CupertinoIcons.mail,
-              ),
-              const SizedBox(height: 10),
-
-              // Password
-              const Text("Password", style: TextStyle(fontSize: 14)),
-              const SizedBox(height: 5),
-              CustomTextInput(
-                nameController: _passwordController,
-                placeholder: "********",
-                isPassWordInput: true,
-                prefixIcon: CupertinoIcons.padlock,
-              ),
-              const SizedBox(height: 10),
-
-              // Login Button
-              SizedBox(
-                width: double.infinity,
-                child: CupertinoButton(
-                  onPressed: () {},
-                  color: CupertinoColors.extraLightBackgroundGray,
-                  child: Text(
-                    "Login",
-                    style: TextStyle(color: CupertinoColors.darkBackgroundGray),
-                  ),
+        child: SingleChildScrollView(
+          child: Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisAlignment: .center,
+              crossAxisAlignment: .start,
+              children: [
+                Center(
+                  child: Text("Welcome Back!", style: TextStyle(fontSize: 24)),
                 ),
-              ),
-              const SizedBox(height: 15),
+                const SizedBox(height: 10),
 
-              // Divider
-              Row(
-                mainAxisAlignment: .center,
-                children: [
-                  Container(
-                    color: CupertinoColors.extraLightBackgroundGray,
-                    child: SizedBox(
-                      width: MediaQuery.sizeOf(context).width * 0.2,
-                      height: 1,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  const Text("Or LogIn with"),
-                  const SizedBox(width: 5),
-                  Container(
-                    color: CupertinoColors.extraLightBackgroundGray,
-                    child: SizedBox(
-                      width: MediaQuery.sizeOf(context).width * 0.2,
-                      height: 1,
-                    ),
-                  ),
-                ],
-              ),
+                // Email
+                const Text("Email", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                CustomTextInput(
+                  nameController: _emailController,
+                  placeholder: "johndoe@techify.com",
+                  prefixIcon: CupertinoIcons.mail,
+                  errorText: _emailError,
+                  onChanged: (value) {
+                    if (_emailError != null) {
+                      setState(() => _emailError = null);
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
 
-              const SizedBox(height: 15),
+                // Password
+                const Text("Password", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                CustomTextInput(
+                  nameController: _passwordController,
+                  placeholder: "********",
+                  isPassWordInput: true,
+                  prefixIcon: CupertinoIcons.padlock,
+                  errorText: _passwordError,
+                  onChanged: (value) {
+                    if (_passwordError != null) {
+                      setState(() => _passwordError = null);
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
 
-              // Google Button
-              Container(
-                color: CupertinoColors.darkBackgroundGray,
-                child: SizedBox(
+                // Login Button
+                SizedBox(
                   width: double.infinity,
                   child: CupertinoButton(
-                    color: CupertinoColors.darkBackgroundGray,
-                    onPressed: () {},
-                    child: Row(
-                      crossAxisAlignment: .center,
-                      mainAxisAlignment: .center,
-                      children: [
-                        Image.asset(
-                          "assets/logo/google_logo.png",
-                          height: 20,
-                          width: 20,
-                        ),
-                        Text(
-                          "oogle",
-                          style: TextStyle(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                            fontWeight: .w900,
+                    onPressed: () {
+                      login(context);
+                    },
+                    color: CupertinoColors.extraLightBackgroundGray,
+                    child: _loading
+                        ? const CupertinoActivityIndicator(
+                            radius: 10,
+                            color: CupertinoColors.darkBackgroundGray,
+                          )
+                        : Text(
+                            "Log in",
+                            style: TextStyle(
+                              color: CupertinoColors.darkBackgroundGray,
+                            ),
                           ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+
+                // Divider
+                Row(
+                  mainAxisAlignment: .center,
+                  children: [
+                    Container(
+                      color: CupertinoColors.extraLightBackgroundGray,
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.2,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    const Text("Or LogIn with"),
+                    const SizedBox(width: 5),
+                    Container(
+                      color: CupertinoColors.extraLightBackgroundGray,
+                      child: SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.2,
+                        height: 1,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 15),
+
+                // Google Button
+                Container(
+                  color: CupertinoColors.darkBackgroundGray,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: CupertinoButton(
+                      color: CupertinoColors.darkBackgroundGray,
+                      onPressed: () {},
+                      child: Row(
+                        crossAxisAlignment: .center,
+                        mainAxisAlignment: .center,
+                        children: [
+                          Image.asset(
+                            "assets/logo/google_logo.png",
+                            height: 20,
+                            width: 20,
+                          ),
+                          Text(
+                            "oogle",
+                            style: TextStyle(
+                              color: CupertinoColors.extraLightBackgroundGray,
+                              fontWeight: .w900,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Don't have an account?  ",
+                      children: [
+                        TextSpan(
+                          text: "Sign Up",
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushReplacement(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (_) =>
+                                      const AuthGate(destination: SignUpPage()),
+                                ),
+                              );
+                            },
+                          style: TextStyle(decoration: .underline),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    text: "Already have an account?  ",
-                    children: [
-                      TextSpan(
-                        text: "Login",
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            if (kDebugMode) {
-                              print("Login clicked");
-                            }
-                          },
-                        style: TextStyle(decoration: .underline),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

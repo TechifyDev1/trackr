@@ -44,4 +44,62 @@ class AuthService {
   void logout() {
     _auth.signOut();
   }
+
+  Future<Map<String, String>> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final res = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      if (kDebugMode) {
+        print("Login success: ${res.user?.uid}");
+      }
+
+      return {"status": "success", "message": "Login successful"};
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "invalid-email":
+          return {"status": "error", "message": "Invalid email address"};
+
+        case "user-not-found":
+          return {
+            "status": "error",
+            "message": "No account found with this email",
+          };
+
+        case "wrong-password":
+          return {"status": "error", "message": "Incorrect password"};
+
+        case "user-disabled":
+          return {
+            "status": "error",
+            "message": "This account has been disabled",
+          };
+
+        case "network-request-failed":
+          return {
+            "status": "error",
+            "message": "Check your internet connection",
+          };
+
+        case "too-many-requests":
+          return {
+            "status": "error",
+            "message": "Too many attempts. Try again later",
+          };
+
+        default:
+          return {
+            "status": "error",
+            "message": "Login failed. Please try again",
+          };
+      }
+    } catch (e) {
+      return {"status": "error", "message": "Unexpected error occurred"};
+    }
+  }
 }
