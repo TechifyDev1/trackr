@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_list_tile.dart';
 
 class HomePage extends StatefulWidget {
@@ -28,7 +29,9 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                AuthService.instance.logout();
+              },
               icon: Icon(CupertinoIcons.settings, color: CupertinoColors.white),
               style: IconButton.styleFrom(
                 backgroundColor: CupertinoColors.darkBackgroundGray,

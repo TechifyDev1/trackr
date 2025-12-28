@@ -26,43 +26,84 @@ class _SignUpPageState extends State<SignUpPage> {
     _emailController = TextEditingController(text: "");
   }
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPassController.dispose();
+    super.dispose();
+  }
+
   bool _loading = false;
+
+  void _showError(BuildContext context, String err) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) => CupertinoAlertDialog(
+        title: const Text(
+          "Error",
+          style: TextStyle(color: CupertinoColors.destructiveRed),
+        ),
+        content: Text(err),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text(
+              'Ok',
+              style: TextStyle(color: CupertinoColors.extraLightBackgroundGray),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   String? _emailError;
   String? _nameError;
   String? _passwordError;
+  bool _validate() {
+    bool valid = true;
 
-  void signUp() async {
+    if (_nameController.text.isEmpty) {
+      _nameError = "Name is required";
+      valid = false;
+    } else {
+      _nameError = null;
+    }
+
+    if (_emailController.text.isEmpty) {
+      _emailError = "Email is required";
+      valid = false;
+    } else {
+      _emailError = null;
+    }
+
+    if (_passwordController.text.isEmpty) {
+      _passwordError = "Password is required";
+      valid = false;
+    } else if (_passwordController.text.trim() !=
+        _confirmPassController.text.trim()) {
+      _passwordError = "Password mismatch";
+      valid = false;
+    } else {
+      _passwordError = null;
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+    return valid;
+  }
+
+  void signUp(BuildContext context) async {
+    if (!_validate()) return;
+    if (!mounted) return;
     setState(() {
       _loading = true;
-    });
-    setState(() {
-      if (_nameController.text.isEmpty) {
-        _nameError = "Name is required";
-        return;
-      } else {
-        _nameError = null;
-        // return;
-      }
-      if (_emailController.text.isEmpty) {
-        _emailError = "Email is required";
-        return;
-      } else {
-        _emailError = null;
-        // return;
-      }
-      if (_passwordController.text.isEmpty) {
-        _passwordError = "Password is required";
-        return;
-      } else {
-        _passwordError = null;
-      }
-
-      if (_passwordController.text.trim() !=
-          _confirmPassController.text.trim()) {
-        _passwordError = "Password Mismatch";
-        return;
-      }
     });
 
     try {
@@ -77,10 +118,10 @@ class _SignUpPageState extends State<SignUpPage> {
       });
     } catch (e) {
       if (kDebugMode) print(e);
-      setState(() {
-        _loading = false;
-      });
-    } finally {
+      if (context.mounted) {
+        _showError(context, e.toString());
+      }
+      if (!mounted) return;
       setState(() {
         _loading = false;
       });
@@ -186,7 +227,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   width: double.infinity,
                   child: CupertinoButton(
                     onPressed: () {
-                      signUp();
+                      signUp(context);
                     },
                     color: CupertinoColors.extraLightBackgroundGray,
                     child: _loading
