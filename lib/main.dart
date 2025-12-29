@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_application_1/auth_gate.dart';
 import 'package:flutter_application_1/firebase_options.dart';
 import 'package:flutter_application_1/widgets/molecules/root_tabs.dart';
@@ -16,6 +17,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(home: AuthGate(destination: RootTabs()));
+    return CupertinoApp(
+      localizationsDelegates: [
+        DefaultMaterialLocalizations.delegate,
+        DefaultCupertinoLocalizations.delegate,
+        DefaultWidgetsLocalizations.delegate,
+      ],
+      home: AuthGate(destination: RootTabs()),
+    );
   }
 }

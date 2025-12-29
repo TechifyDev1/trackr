@@ -6,6 +6,7 @@ class CustomTextInput extends StatefulWidget {
   final bool isPassWordInput;
   final IconData prefixIcon;
   final String? errorText;
+  final bool disabled;
   final void Function(String)? onChanged;
   const CustomTextInput({
     super.key,
@@ -15,6 +16,7 @@ class CustomTextInput extends StatefulWidget {
     this.prefixIcon = CupertinoIcons.person,
     this.errorText,
     this.onChanged,
+    this.disabled = false,
   });
 
   @override
@@ -28,6 +30,7 @@ class _CustomTextInputState extends State<CustomTextInput> {
       crossAxisAlignment: .start,
       children: [
         CupertinoTextField(
+          readOnly: widget.disabled,
           obscureText: widget.isPassWordInput,
           padding: EdgeInsets.all(12),
           controller: widget.nameController,

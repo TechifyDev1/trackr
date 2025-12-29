@@ -7,7 +7,9 @@ import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
 
-class SignUpPage extends StatefulWidget {
+abstract class AuthPage {}
+
+class SignUpPage extends StatefulWidget implements AuthPage {
   const SignUpPage({super.key});
 
   @override

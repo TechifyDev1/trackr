@@ -1,0 +1,22 @@
+{
+  "id": "card_001",
+  "nickname": "GTBank Debit",
+  "type": "debit",
+  "network": "verve",
+  "last4": "1234",
+  "bank": "GTBank",
+  "currency": "NGN",
+  "createdAt": "2025-01-01",
+  "balance": 1233344.4
+}
+{
+  "id": "txn_001",
+  "title": "Lunch at Cafe",
+  "amount": 1200.00,
+  "currency": "NGN",
+  "date": "2025-12-28T12:30:00Z",
+  "category": "Food & Drinks",
+  "card_id": "card_001",
+  "notes": "Lunch with colleagues",
+  "type": "expense"
+}

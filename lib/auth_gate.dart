@@ -16,12 +16,8 @@ class AuthGate extends StatelessWidget {
       builder: (context, snapshot) {
         final bool isAuthenticated = snapshot.data ?? false;
 
-        // Get the destination type name
-        final destinationType = destination.runtimeType.toString();
-
         // Define which pages are authentication pages (login/signup)
-        final isAuthPage =
-            destinationType == "LoginPage" || destinationType == "SignUpPage";
+        final isAuthPage = destination is AuthPage;
 
         // If user is authenticated AND trying to access auth pages, redirect to Home
         if (isAuthenticated && isAuthPage) {
@@ -33,7 +29,6 @@ class AuthGate extends StatelessWidget {
           return SignUpPage(); // or LoginPage()
         }
 
-        // All other cases: return the requested destination
         return destination;
       },
     );
