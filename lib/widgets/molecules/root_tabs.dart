@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/pages/cards_page.dart';
+import 'package:flutter_application_1/pages/expenses_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
 
 class RootTabs extends StatelessWidget {
@@ -18,6 +19,10 @@ class RootTabs extends StatelessWidget {
             label: "Home",
           ),
           BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.money_dollar_circle_fill),
+            label: "Expenses",
+          ),
+          BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.creditcard),
             label: "Cards",
           ),
@@ -32,8 +37,10 @@ class RootTabs extends StatelessWidget {
           case 0:
             return HomePage();
           case 1:
-            return CardsPage();
+            return ExpensesPage();
           case 2:
+            return CardsPage();
+          case 3:
             return const Center(child: Text("Settings"));
           default:
             return const HomePage();

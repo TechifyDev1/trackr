@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/widgets/molecules/custom_list_tile.dart';
+import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -220,33 +220,29 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(height: 12),
                     const Text("Today", style: TextStyle(fontSize: 12)),
                     const SizedBox(height: 5),
-                    CustomListTile(
+                    ExpensesList(
                       title: "AT & T",
                       subtitle: "Unlimited Family plan",
-                      imgPath: "assets/images/at_t.png",
                       price: "39.99",
                     ),
                     const SizedBox(height: 5),
-                    CustomListTile(
+                    ExpensesList(
                       title: "CC subscription",
                       subtitle: "Unlimited Family plan",
-                      imgPath: "assets/images/cc.png",
                       price: "39.99",
                     ),
                     const SizedBox(height: 5),
                     const Text("Yesterday", style: TextStyle(fontSize: 12)),
                     const SizedBox(height: 5),
-                    CustomListTile(
+                    ExpensesList(
                       title: "Bizzard entertainment",
                       subtitle: "6 month subscription",
-                      imgPath: "assets/images/at_t.png",
                       price: "39.99",
                     ),
                     const SizedBox(height: 5),
-                    CustomListTile(
+                    ExpensesList(
                       title: "Netflix",
                       subtitle: "Basic plan",
-                      imgPath: "assets/images/netflix.jpg",
                       price: "39.99",
                     ),
                   ],

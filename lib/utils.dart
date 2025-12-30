@@ -25,4 +25,11 @@ class Utils {
       ),
     );
   }
+
+  static void showForm(BuildContext context, Widget child) {
+    Navigator.push(
+      context,
+      CupertinoPageRoute(builder: (context) => child, fullscreenDialog: true),
+    );
+  }
 }

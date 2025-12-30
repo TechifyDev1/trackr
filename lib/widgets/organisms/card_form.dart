@@ -24,6 +24,10 @@ class _CardFormState extends State<CardForm> {
   late TextEditingController _nicknameController;
   late TextEditingController _cardTypeController;
   late TextEditingController _cardNetWorkTypeController;
+  late TextEditingController _cardLastNumsController;
+  late TextEditingController _bankController;
+  late TextEditingController _currencyController;
+  late TextEditingController _balanceController;
 
   @override
   void initState() {
@@ -31,6 +35,10 @@ class _CardFormState extends State<CardForm> {
     _nicknameController = TextEditingController(text: "");
     _cardTypeController = TextEditingController(text: "");
     _cardNetWorkTypeController = TextEditingController(text: "");
+    _cardLastNumsController = TextEditingController(text: "");
+    _bankController = TextEditingController(text: "");
+    _currencyController = TextEditingController(text: "");
+    _balanceController = TextEditingController(text: "");
   }
 
   @override
@@ -38,11 +46,16 @@ class _CardFormState extends State<CardForm> {
     _nicknameController.dispose();
     _cardTypeController.dispose();
     _cardNetWorkTypeController.dispose();
+    _cardLastNumsController.dispose();
+    _bankController.dispose();
+    _currencyController.dispose();
+    _balanceController.dispose();
     super.dispose();
   }
 
   int _selectedCardNetworkType = 0;
   int _selectedCardType = 0;
+  bool _loading = false;
 
   void _showTypePopup(Widget child) {
     showCupertinoModalPopup<void>(
@@ -69,91 +82,151 @@ class _CardFormState extends State<CardForm> {
       child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              const Text("Nickname", style: TextStyle(fontSize: 14)),
-              const SizedBox(height: 5),
-              CustomTextInput(
-                nameController: _nicknameController,
-                placeholder: "Nickname on card",
-              ),
-              const SizedBox(height: 15),
-              const Text("Type", style: TextStyle(fontSize: 14)),
-              const SizedBox(height: 5),
-              GestureDetector(
-                onTap: () => _showTypePopup(
-                  CupertinoPicker(
-                    itemExtent: _kItemExtent,
-                    magnification: 1.2,
-                    squeeze: 1.2,
-                    useMagnifier: true,
-                    scrollController: FixedExtentScrollController(
-                      initialItem: _selectedCardType,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                const Text("Nickname", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                CustomTextInput(
+                  nameController: _nicknameController,
+                  placeholder: "Nickname on card",
+                ),
+                const SizedBox(height: 15),
+                const Text("Type", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                GestureDetector(
+                  onTap: () => _showTypePopup(
+                    CupertinoPicker(
+                      itemExtent: _kItemExtent,
+                      magnification: 1.2,
+                      squeeze: 1.2,
+                      useMagnifier: true,
+                      scrollController: FixedExtentScrollController(
+                        initialItem: _selectedCardType,
+                      ),
+                      onSelectedItemChanged: (int selectedType) {
+                        setState(() {
+                          _selectedCardType = selectedType;
+                          _cardTypeController.text = _cardTypes[selectedType];
+                        });
+                      },
+                      children: List.generate(_cardTypes.length, (int index) {
+                        return Center(child: Text(_cardTypes[index]));
+                      }),
                     ),
-                    onSelectedItemChanged: (int selectedType) {
-                      setState(() {
-                        _selectedCardType = selectedType;
-                        _cardTypeController.text = _cardTypes[selectedType];
-                      });
-                    },
-                    children: List.generate(_cardTypes.length, (int index) {
-                      return Center(child: Text(_cardTypes[index]));
-                    }),
                   ),
-                ),
 
-                child: AbsorbPointer(
-                  absorbing: true,
-                  child: CustomTextInput(
-                    nameController: _cardTypeController,
-                    placeholder: "Click to select card type",
-                    disabled: true,
-                    prefixIcon: CupertinoIcons.creditcard,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-
-              const Text("Network", style: TextStyle(fontSize: 14)),
-              const SizedBox(height: 5),
-              GestureDetector(
-                onTap: () => _showTypePopup(
-                  CupertinoPicker(
-                    itemExtent: _kItemExtent,
-                    magnification: 1.2,
-                    squeeze: 1.2,
-                    useMagnifier: true,
-                    scrollController: FixedExtentScrollController(
-                      initialItem: _selectedCardType,
+                  child: AbsorbPointer(
+                    absorbing: true,
+                    child: CustomTextInput(
+                      nameController: _cardTypeController,
+                      placeholder: "Click to select card type",
+                      disabled: true,
+                      prefixIcon: CupertinoIcons.creditcard,
                     ),
-                    onSelectedItemChanged: (int selectedType) {
-                      setState(() {
-                        _selectedCardNetworkType = selectedType;
-                        _cardNetWorkTypeController.text =
-                            _cardNetworkType[selectedType];
-                      });
-                    },
-                    children: List.generate(_cardNetworkType.length, (
-                      int index,
-                    ) {
-                      return Center(child: Text(_cardNetworkType[index]));
-                    }),
                   ),
                 ),
+                const SizedBox(height: 15),
 
-                child: AbsorbPointer(
-                  absorbing: true,
-                  child: CustomTextInput(
-                    nameController: _cardNetWorkTypeController,
-                    placeholder: "Click to select card network",
-                    disabled: true,
-                    prefixIcon: CupertinoIcons.antenna_radiowaves_left_right,
+                const Text("Network", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                GestureDetector(
+                  onTap: () => _showTypePopup(
+                    CupertinoPicker(
+                      itemExtent: _kItemExtent,
+                      magnification: 1.2,
+                      squeeze: 1.2,
+                      useMagnifier: true,
+                      scrollController: FixedExtentScrollController(
+                        initialItem: _selectedCardType,
+                      ),
+                      onSelectedItemChanged: (int selectedType) {
+                        setState(() {
+                          _selectedCardNetworkType = selectedType;
+                          _cardNetWorkTypeController.text =
+                              _cardNetworkType[selectedType];
+                        });
+                      },
+                      children: List.generate(_cardNetworkType.length, (
+                        int index,
+                      ) {
+                        return Center(child: Text(_cardNetworkType[index]));
+                      }),
+                    ),
+                  ),
+
+                  child: AbsorbPointer(
+                    absorbing: true,
+                    child: CustomTextInput(
+                      nameController: _cardNetWorkTypeController,
+                      placeholder: "Click to select card network",
+                      disabled: true,
+                      prefixIcon: CupertinoIcons.antenna_radiowaves_left_right,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 15),
-            ],
+                const SizedBox(height: 15),
+
+                const Text("Last four digit", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                CustomTextInput(
+                  nameController: _cardLastNumsController,
+                  placeholder: "Last four digit of your card",
+                  inputType: TextInputType.number,
+                  prefixIcon: CupertinoIcons.asterisk_circle,
+                ),
+                const SizedBox(height: 15),
+
+                const Text("Bank", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                CustomTextInput(
+                  nameController: _bankController,
+                  placeholder: "Bank Name",
+                  prefixIcon: CupertinoIcons.house_alt,
+                ),
+                const SizedBox(height: 15),
+
+                const Text("Currency", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                CustomTextInput(
+                  nameController: _currencyController,
+                  placeholder: "Currency on card",
+                  prefixIcon: CupertinoIcons.money_dollar,
+                  disabled: true,
+                ),
+                const SizedBox(height: 15),
+
+                const Text("Balance", style: TextStyle(fontSize: 14)),
+                const SizedBox(height: 5),
+                CustomTextInput(
+                  nameController: _balanceController,
+                  placeholder: "Amount on card",
+                ),
+                const SizedBox(height: 15),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: CupertinoButton(
+                    onPressed: () {
+                      // signUp(context);
+                    },
+                    color: CupertinoColors.extraLightBackgroundGray,
+                    child: _loading
+                        ? const CupertinoActivityIndicator(
+                            radius: 10,
+                            color: CupertinoColors.darkBackgroundGray,
+                          )
+                        : Text(
+                            "Create card",
+                            style: TextStyle(
+                              color: CupertinoColors.darkBackgroundGray,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
