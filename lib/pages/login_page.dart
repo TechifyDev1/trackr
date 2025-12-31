@@ -71,7 +71,8 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (kDebugMode) print(e);
       if (context.mounted) {
-        Utils.showError(context, e.toString());
+        final errData = e as Map<String, dynamic>;
+        Utils.showError(context, errData["message"].toString());
       }
       if (!mounted) return;
       setState(() {

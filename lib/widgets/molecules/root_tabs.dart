@@ -4,12 +4,26 @@ import 'package:flutter_application_1/pages/expenses_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
 import 'package:flutter_application_1/pages/settings_page.dart';
 
-class RootTabs extends StatelessWidget {
+class RootTabs extends StatefulWidget {
   const RootTabs({super.key});
+
+  @override
+  State<RootTabs> createState() => _RootTabsState();
+}
+
+class _RootTabsState extends State<RootTabs> {
+  final CupertinoTabController _tabController = CupertinoTabController();
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
+      controller: _tabController,
       tabBar: CupertinoTabBar(
         iconSize: 20,
         activeColor: CupertinoColors.white,
@@ -36,7 +50,7 @@ class RootTabs extends StatelessWidget {
       tabBuilder: (context, index) {
         switch (index) {
           case 0:
-            return HomePage();
+            return HomePage(tabController: _tabController);
           case 1:
             return ExpensesPage();
           case 2:
@@ -44,7 +58,7 @@ class RootTabs extends StatelessWidget {
           case 3:
             return SettingsPage();
           default:
-            return const HomePage();
+            return HomePage(tabController: _tabController);
         }
       },
     );

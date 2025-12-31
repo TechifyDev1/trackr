@@ -22,7 +22,13 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   int _selectedCategory = 0;
   int _selectedType = 0;
-  bool _loading = false;
+  late bool _loading;
+
+  @override
+  void initState() {
+    super.initState();
+    _loading = false;
+  }
 
   @override
   void dispose() {

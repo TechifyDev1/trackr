@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_application_1/enums/enums.dart';
 
 class AuthService {
   AuthService._();
@@ -26,6 +27,7 @@ class AuthService {
       _db.collection("users").doc(credential.user?.uid.toString()).set({
         "name": name,
         "email": email,
+        "currency": Currencies.ngn.name,
       });
       if (kDebugMode) print(credential.user);
       return {"status": "success", "message": "Account created Successfully"};
@@ -62,44 +64,48 @@ class AuthService {
       return {"status": "success", "message": "Login successful"};
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
+        case "invalid-credential":
         case "invalid-email":
-          return {"status": "error", "message": "Invalid email address"};
+          throw {
+            "status": "error",
+            "message": "Invalid email address or password",
+          };
 
         case "user-not-found":
-          return {
+          throw {
             "status": "error",
             "message": "No account found with this email",
           };
 
         case "wrong-password":
-          return {"status": "error", "message": "Incorrect password"};
+          throw {"status": "error", "message": "Incorrect password"};
 
         case "user-disabled":
-          return {
+          throw {
             "status": "error",
             "message": "This account has been disabled",
           };
 
         case "network-request-failed":
-          return {
+          throw {
             "status": "error",
             "message": "Check your internet connection",
           };
 
         case "too-many-requests":
-          return {
+          throw {
             "status": "error",
             "message": "Too many attempts. Try again later",
           };
 
         default:
-          return {
+          throw {
             "status": "error",
             "message": "Login failed. Please try again",
           };
       }
     } catch (e) {
-      return {"status": "error", "message": "Unexpected error occurred"};
+      throw {"status": "error", "message": "Unexpected error occurred"};
     }
   }
 }

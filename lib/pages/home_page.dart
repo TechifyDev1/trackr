@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final CupertinoTabController tabController;
+  const HomePage({super.key, required this.tabController});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -27,7 +27,7 @@ class _HomePageState extends State<HomePage> {
         ),
         trailing: IconButton(
           onPressed: () {
-            AuthService.instance.logout();
+            widget.tabController.index = 3;
           },
           icon: Icon(
             CupertinoIcons.settings,

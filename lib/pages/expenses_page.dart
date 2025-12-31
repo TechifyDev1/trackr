@@ -16,7 +16,7 @@ class ExpensesPage extends StatelessWidget {
       navigationBar: CupertinoNavigationBar(
         middle: Text("Expenses"),
         trailing: IconButton(
-          onPressed: () => {Utils.showForm(context, ExpenseForm())},
+          onPressed: () => {Utils.showPagePopup(context, ExpenseForm())},
           icon: Icon(CupertinoIcons.add),
           iconSize: 16,
           color: CupertinoColors.extraLightBackgroundGray,

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application_1/pages/expense_detail_page.dart';
 
 enum TransactionType {
   expense,
@@ -35,23 +36,31 @@ class ExpensesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromARGB(255, 131, 128, 128)),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: CupertinoListTile(
-        leading: Icon(
-          transactionType.icon,
-          size: 28,
-          color: CupertinoColors.extraLightBackgroundGray,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => ExpenseDetailPage()),
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color.fromARGB(255, 131, 128, 128)),
+          borderRadius: BorderRadius.circular(16),
         ),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: Text(
-          transactionType.formatAmount(price),
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        child: CupertinoListTile(
+          leading: Icon(
+            transactionType.icon,
+            size: 28,
+            color: CupertinoColors.extraLightBackgroundGray,
+          ),
+          title: Text(title),
+          subtitle: Text(subtitle),
+          trailing: Text(
+            transactionType.formatAmount(price),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          ),
         ),
       ),
     );
