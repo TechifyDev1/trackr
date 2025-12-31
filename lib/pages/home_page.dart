@@ -70,51 +70,51 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: .spaceBetween,
-                      children: [
-                        const Text(
-                          "Transfer Limit",
-                          style: TextStyle(fontWeight: .w500),
-                        ),
-                        // SizedBox(width: 10),
-                        const Text(
-                          "\$12,000",
-                          style: TextStyle(fontWeight: .w500),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
-                      children: [
-                        SizedBox(
-                          height: 2,
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: Container(color: CupertinoColors.white),
-                        ),
-                        SizedBox(
-                          height: 2,
-                          width: MediaQuery.of(context).size.width * 0.6,
-                          child: Container(color: Colors.white30),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    const Text(
-                      "Spent \$1,244.65",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color.fromARGB(255, 197, 197, 197),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(16.0),
+              //   child: Column(
+              //     crossAxisAlignment: .start,
+              //     children: [
+              //       Row(
+              //         mainAxisAlignment: .spaceBetween,
+              //         children: [
+              //           const Text(
+              //             "Transfer Limit",
+              //             style: TextStyle(fontWeight: .w500),
+              //           ),
+              //           // SizedBox(width: 10),
+              //           const Text(
+              //             "\$12,000",
+              //             style: TextStyle(fontWeight: .w500),
+              //           ),
+              //         ],
+              //       ),
+              //       const SizedBox(height: 5),
+              //       Row(
+              //         children: [
+              //           SizedBox(
+              //             height: 2,
+              //             width: MediaQuery.of(context).size.width * 0.3,
+              //             child: Container(color: CupertinoColors.white),
+              //           ),
+              //           SizedBox(
+              //             height: 2,
+              //             width: MediaQuery.of(context).size.width * 0.6,
+              //             child: Container(color: Colors.white30),
+              //           ),
+              //         ],
+              //       ),
+              //       const SizedBox(height: 5),
+              //       const Text(
+              //         "Spent \$1,244.65",
+              //         style: TextStyle(
+              //           fontSize: 14,
+              //           color: Color.fromARGB(255, 197, 197, 197),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               const SizedBox(height: 15),
               Padding(
                 padding: const EdgeInsets.all(16.0),
