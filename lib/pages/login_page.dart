@@ -101,9 +101,9 @@ class _LoginPageState extends State<LoginPage> {
                 const Text("Email", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _emailController,
+                  controller: _emailController,
                   placeholder: "johndoe@techify.com",
-                  prefixIcon: CupertinoIcons.mail,
+                  prefixIcon: CupertinoIcons.at,
                   errorText: _emailError,
                   onChanged: (value) {
                     if (_emailError != null) {
@@ -117,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                 const Text("Password", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _passwordController,
+                  controller: _passwordController,
                   placeholder: "********",
                   isPassWordInput: true,
                   prefixIcon: CupertinoIcons.padlock,

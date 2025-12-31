@@ -29,6 +29,10 @@ class _CardFormState extends State<CardForm> {
   late TextEditingController _currencyController;
   late TextEditingController _balanceController;
 
+  int _selectedCardNetworkType = 0;
+  int _selectedCardType = 0;
+  late bool _loading;
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +43,7 @@ class _CardFormState extends State<CardForm> {
     _bankController = TextEditingController(text: "");
     _currencyController = TextEditingController(text: "");
     _balanceController = TextEditingController(text: "");
+    _loading = false;
   }
 
   @override
@@ -52,10 +57,6 @@ class _CardFormState extends State<CardForm> {
     _balanceController.dispose();
     super.dispose();
   }
-
-  int _selectedCardNetworkType = 0;
-  int _selectedCardType = 0;
-  bool _loading = false;
 
   void _showTypePopup(Widget child) {
     showCupertinoModalPopup<void>(
@@ -89,7 +90,7 @@ class _CardFormState extends State<CardForm> {
                 const Text("Nickname", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _nicknameController,
+                  controller: _nicknameController,
                   placeholder: "Nickname on card",
                 ),
                 const SizedBox(height: 15),
@@ -120,7 +121,7 @@ class _CardFormState extends State<CardForm> {
                   child: AbsorbPointer(
                     absorbing: true,
                     child: CustomTextInput(
-                      nameController: _cardTypeController,
+                      controller: _cardTypeController,
                       placeholder: "Click to select card type",
                       disabled: true,
                       prefixIcon: CupertinoIcons.creditcard,
@@ -159,7 +160,7 @@ class _CardFormState extends State<CardForm> {
                   child: AbsorbPointer(
                     absorbing: true,
                     child: CustomTextInput(
-                      nameController: _cardNetWorkTypeController,
+                      controller: _cardNetWorkTypeController,
                       placeholder: "Click to select card network",
                       disabled: true,
                       prefixIcon: CupertinoIcons.antenna_radiowaves_left_right,
@@ -171,7 +172,7 @@ class _CardFormState extends State<CardForm> {
                 const Text("Last four digit", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _cardLastNumsController,
+                  controller: _cardLastNumsController,
                   placeholder: "Last four digit of your card",
                   inputType: TextInputType.number,
                   prefixIcon: CupertinoIcons.asterisk_circle,
@@ -181,7 +182,7 @@ class _CardFormState extends State<CardForm> {
                 const Text("Bank", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _bankController,
+                  controller: _bankController,
                   placeholder: "Bank Name",
                   prefixIcon: CupertinoIcons.house_alt,
                 ),
@@ -190,7 +191,7 @@ class _CardFormState extends State<CardForm> {
                 const Text("Currency", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _currencyController,
+                  controller: _currencyController,
                   placeholder: "Currency on card",
                   prefixIcon: CupertinoIcons.money_dollar,
                   disabled: true,
@@ -200,7 +201,7 @@ class _CardFormState extends State<CardForm> {
                 const Text("Balance", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _balanceController,
+                  controller: _balanceController,
                   placeholder: "Amount on card",
                 ),
                 const SizedBox(height: 15),

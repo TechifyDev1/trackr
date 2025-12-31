@@ -142,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Text("Full Name", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _nameController,
+                  controller: _nameController,
                   placeholder: "John Doe",
                   errorText: _nameError,
                   onChanged: (value) {
@@ -157,9 +157,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Text("Email", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _emailController,
+                  controller: _emailController,
                   placeholder: "johndoe@techify.com",
-                  prefixIcon: CupertinoIcons.mail,
+                  prefixIcon: CupertinoIcons.at,
                   errorText: _emailError,
                   onChanged: (value) {
                     if (_emailError != null) {
@@ -173,7 +173,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Text("Password", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _passwordController,
+                  controller: _passwordController,
                   placeholder: "********",
                   isPassWordInput: true,
                   prefixIcon: CupertinoIcons.padlock,
@@ -190,7 +190,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const Text("Confirm Password", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _confirmPassController,
+                  controller: _confirmPassController,
                   placeholder: "********",
                   isPassWordInput: true,
                   prefixIcon: CupertinoIcons.padlock,

@@ -57,7 +57,7 @@ class CustomCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(
-          colors: [CupertinoColors.activeBlue, CupertinoColors.systemBlue],
+          colors: [CupertinoColors.black, Color.fromARGB(255, 40, 40, 41)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),

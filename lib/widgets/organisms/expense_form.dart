@@ -84,7 +84,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 const Text("Title", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _titleController,
+                  controller: _titleController,
                   placeholder: "Title",
                   prefixIcon: CupertinoIcons.pencil,
                 ),
@@ -93,7 +93,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 const Text("Amount", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _amountController,
+                  controller: _amountController,
                   placeholder: "Amount of expense",
                   prefixIcon: CupertinoIcons.money_dollar,
                   inputType: TextInputType.numberWithOptions(),
@@ -103,7 +103,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 const Text("Currency", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _amountController,
+                  controller: _amountController,
                   placeholder: "Currency",
                   prefixIcon: CupertinoIcons.money_euro_circle,
                 ),
@@ -134,7 +134,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                   child: AbsorbPointer(
                     absorbing: true,
                     child: CustomTextInput(
-                      nameController: _categoriescontroller,
+                      controller: _categoriescontroller,
                       placeholder: "Currency click to choose",
                       prefixIcon: CupertinoIcons.square_grid_2x2,
                       disabled: true,
@@ -146,7 +146,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 const Text("Card", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _amountController,
+                  controller: _amountController,
                   placeholder: "Select a card",
                   prefixIcon: CupertinoIcons.creditcard,
                 ),
@@ -155,7 +155,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                 const Text("Notes", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
-                  nameController: _notesController,
+                  controller: _notesController,
                   placeholder: "Notes",
                   prefixIcon: CupertinoIcons.book,
                 ),
@@ -183,7 +183,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                   child: AbsorbPointer(
                     absorbing: true,
                     child: CustomTextInput(
-                      nameController: _typeController,
+                      controller: _typeController,
                       placeholder: "Transaction type (click to choose)",
                       prefixIcon: CupertinoIcons.arrow_up_arrow_down,
                       disabled: true,

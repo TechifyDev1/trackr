@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/pages/cards_page.dart';
 import 'package:flutter_application_1/pages/expenses_page.dart';
 import 'package:flutter_application_1/pages/home_page.dart';
+import 'package:flutter_application_1/pages/settings_page.dart';
 
 class RootTabs extends StatelessWidget {
   const RootTabs({super.key});
@@ -41,7 +42,7 @@ class RootTabs extends StatelessWidget {
           case 2:
             return CardsPage();
           case 3:
-            return const Center(child: Text("Settings"));
+            return SettingsPage();
           default:
             return const HomePage();
         }

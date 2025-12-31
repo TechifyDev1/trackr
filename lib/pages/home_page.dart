@@ -25,28 +25,19 @@ class _HomePageState extends State<HomePage> {
             Text("Qudus Yusuf"),
           ],
         ),
-        trailing: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              onPressed: () {
-                AuthService.instance.logout();
-              },
-              icon: Icon(CupertinoIcons.settings, color: CupertinoColors.white),
-              style: IconButton.styleFrom(
-                backgroundColor: CupertinoColors.darkBackgroundGray,
-              ),
-              iconSize: 16,
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(CupertinoIcons.bell, color: CupertinoColors.white),
-              style: IconButton.styleFrom(
-                backgroundColor: CupertinoColors.darkBackgroundGray,
-              ),
-              iconSize: 16,
-            ),
-          ],
+        trailing: IconButton(
+          onPressed: () {
+            AuthService.instance.logout();
+          },
+          icon: Icon(
+            CupertinoIcons.settings,
+            color: CupertinoColors.white,
+            size: 20,
+          ),
+          style: IconButton.styleFrom(
+            backgroundColor: CupertinoColors.darkBackgroundGray,
+          ),
+          iconSize: 16,
         ),
       ),
       child: SafeArea(

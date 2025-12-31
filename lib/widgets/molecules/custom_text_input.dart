@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class CustomTextInput extends StatefulWidget {
-  final TextEditingController nameController;
+  final TextEditingController controller;
   final String placeholder;
   final bool isPassWordInput;
   final IconData prefixIcon;
@@ -11,7 +11,7 @@ class CustomTextInput extends StatefulWidget {
   final void Function(String)? onChanged;
   const CustomTextInput({
     super.key,
-    required this.nameController,
+    required this.controller,
     required this.placeholder,
     this.isPassWordInput = false,
     this.prefixIcon = CupertinoIcons.person,
@@ -36,7 +36,7 @@ class _CustomTextInputState extends State<CustomTextInput> {
           readOnly: widget.disabled,
           obscureText: widget.isPassWordInput,
           padding: EdgeInsets.all(12),
-          controller: widget.nameController,
+          controller: widget.controller,
           placeholder: widget.placeholder,
           prefix: Padding(
             padding: const EdgeInsets.all(8.0),

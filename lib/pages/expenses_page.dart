@@ -28,7 +28,7 @@ class ExpensesPage extends StatelessWidget {
           child: Column(
             children: [
               CustomTextInput(
-                nameController: searchController,
+                controller: searchController,
                 placeholder: "Search",
                 prefixIcon: CupertinoIcons.search,
               ),
