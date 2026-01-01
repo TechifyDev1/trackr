@@ -1,31 +1,22 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application_1/models/card.dart';
 
-class CardModel {
-  final String id;
-  final String nickname;
-  final String type;
-  final String network;
-  final String last4;
-  final String bank;
-  final String currency;
-  final String createdAt;
-  final double balance;
-
-  CardModel({
-    required this.id,
-    required this.nickname,
-    required this.type,
-    required this.network,
-    required this.last4,
-    required this.bank,
-    required this.currency,
-    required this.createdAt,
-    required this.balance,
-  });
-}
+// class CardModel extends Card {
+//   CardModel({
+//     required super.id,
+//     required super.nickname,
+//     required super.type,
+//     required super.network,
+//     required super.last4,
+//     required super.balance,
+//     required super.bank,
+//     required super.createdAt,
+//     required super.currency,
+//   });
+// }
 
 class CustomCard extends StatelessWidget {
-  final CardModel card;
+  final Card card;
 
   const CustomCard({super.key, required this.card});
 
@@ -73,7 +64,6 @@ class CustomCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top row: Bank + Network
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -89,7 +79,6 @@ class CustomCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          // Card nickname
           Text(
             card.nickname,
             style: const TextStyle(
@@ -118,7 +107,7 @@ class CustomCard extends StatelessWidget {
                 style: TextStyle(color: CupertinoColors.white, fontSize: 14),
               ),
               Text(
-                "${card.currency} ${card.balance.toStringAsFixed(2)}",
+                "${card.currency.name.toUpperCase()} ${card.balance.toStringAsFixed(2)}",
                 style: const TextStyle(
                   color: CupertinoColors.white,
                   fontSize: 18,

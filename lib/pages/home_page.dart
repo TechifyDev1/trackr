@@ -1,33 +1,49 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/card_notifier.dart';
+import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
+import 'package:flutter_application_1/widgets/organisms/expense_form.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerWidget {
   final CupertinoTabController tabController;
   const HomePage({super.key, required this.tabController});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
+    final cards = ref.watch(cardsProvider);
+    final totalBal =
+        cards?.fold(0.0, (sum, card) {
+          return sum + card.balance;
+        }) ??
+        0.0;
+    final formattedAmount = NumberFormat.currency(
+      symbol: user!.currency.currencyIcon, // ₦, $, etc.
+      decimalDigits: 2,
+    ).format(totalBal);
 
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
+    // if (kDebugMode) {
+    //   print(user);
+    // }
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.darkBackgroundGray,
       navigationBar: CupertinoNavigationBar(
-        leading: const Row(
+        leading: Row(
           children: [
             CircleAvatar(
               backgroundImage: AssetImage("assets/images/qudus.png"),
             ),
             SizedBox(width: 10),
-            Text("Qudus Yusuf"),
+            Text(user.name),
           ],
         ),
         trailing: IconButton(
           onPressed: () {
-            widget.tabController.index = 3;
+            tabController.index = 3;
           },
           icon: Icon(
             CupertinoIcons.settings,
@@ -50,9 +66,9 @@ class _HomePageState extends State<HomePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: .start,
-                  children: const [
-                    Text(
-                      "Available on Card",
+                  children: [
+                    const Text(
+                      "Available on Cards",
                       style: TextStyle(
                         color: Color.fromARGB(255, 197, 197, 197),
                         fontSize: 14,
@@ -60,7 +76,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 5),
                     Text(
-                      "\$13,528.31",
+                      formattedAmount,
                       style: TextStyle(
                         color: CupertinoColors.white,
                         fontSize: 28,
@@ -69,7 +85,6 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
               // Padding(
               //   padding: const EdgeInsets.all(16.0),
               //   child: Column(
@@ -115,7 +130,7 @@ class _HomePageState extends State<HomePage> {
               //     ],
               //   ),
               // ),
-              const SizedBox(height: 15),
+              // const SizedBox(height: 15),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
@@ -123,7 +138,9 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Utils.showPagePopup(context, ExpenseForm());
+                        },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: .circular(12),
@@ -150,7 +167,9 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Utils.showPagePopup(context, ExpenseForm());
+                        },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: .circular(12),
@@ -203,7 +222,9 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         const Text("Operations"),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            tabController.index = 1;
+                          },
                           child: const Text("View all"),
                         ),
                       ],

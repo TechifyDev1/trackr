@@ -1,24 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/widgets/organisms/card_form.dart';
 import 'package:flutter_application_1/widgets/organisms/custom_card.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CardsPage extends StatelessWidget {
+class CardsPage extends ConsumerWidget {
   const CardsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final myCard = CardModel(
-      id: "card_001",
-      nickname: "GTBank Debit",
-      type: "debit",
-      network: "verve",
-      last4: "1234",
-      bank: "GTBank",
-      currency: "NGN",
-      createdAt: "2025-01-01",
-      balance: 1233344.4,
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cards = ref.watch(cardsProvider);
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.darkBackgroundGray,
       navigationBar: CupertinoNavigationBar(
@@ -50,20 +42,19 @@ class CardsPage extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              const Row(
+              Row(
                 mainAxisAlignment: .spaceBetween,
-                children: [Text("Your cards"), Text("3")],
+                children: [Text("Your cards"), Text(cards!.length.toString())],
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.29,
                 child: ListView(
-                  scrollDirection: .horizontal,
+                  scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  children: [
-                    CustomCard(card: myCard),
-                    CustomCard(card: myCard),
-                    CustomCard(card: myCard),
-                  ],
+                  children: List.generate(cards.length, (index) {
+                    final card = cards[index];
+                    return CustomCard(card: card);
+                  }),
                 ),
               ),
             ],

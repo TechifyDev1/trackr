@@ -1,4 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_application_1/enums/enums.dart';
+import 'package:flutter_application_1/models/card.dart';
+import 'package:flutter_application_1/services/card_service.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
 
 class CardForm extends StatefulWidget {
@@ -26,12 +31,14 @@ class _CardFormState extends State<CardForm> {
   late TextEditingController _cardNetWorkTypeController;
   late TextEditingController _cardLastNumsController;
   late TextEditingController _bankController;
-  late TextEditingController _currencyController;
   late TextEditingController _balanceController;
 
   int _selectedCardNetworkType = 0;
   int _selectedCardType = 0;
   late bool _loading;
+
+  final List<Currencies> _currencies = Currencies.values;
+  int _selectedCurrency = 0;
 
   @override
   void initState() {
@@ -41,7 +48,6 @@ class _CardFormState extends State<CardForm> {
     _cardNetWorkTypeController = TextEditingController(text: "");
     _cardLastNumsController = TextEditingController(text: "");
     _bankController = TextEditingController(text: "");
-    _currencyController = TextEditingController(text: "");
     _balanceController = TextEditingController(text: "");
     _loading = false;
   }
@@ -53,7 +59,6 @@ class _CardFormState extends State<CardForm> {
     _cardNetWorkTypeController.dispose();
     _cardLastNumsController.dispose();
     _bankController.dispose();
-    _currencyController.dispose();
     _balanceController.dispose();
     super.dispose();
   }
@@ -76,6 +81,115 @@ class _CardFormState extends State<CardForm> {
     );
   }
 
+  String? _nicknameError;
+  String? _cardTypeError;
+  String? _cardNetworkTypeError;
+  String? _lastNumsError;
+  String? _bankError;
+  String? _balanceError;
+
+  bool _validate() {
+    bool valid = true;
+
+    // Nickname
+    if (_nicknameController.text.trim().isEmpty) {
+      _nicknameError = "Nickname is required";
+      valid = false;
+    } else {
+      _nicknameError = null;
+    }
+
+    // Card type
+    if (_cardTypeController.text.trim().isEmpty) {
+      _cardTypeError = "Select a card type";
+      valid = false;
+    } else {
+      _cardTypeError = null;
+    }
+
+    // Card network
+    if (_cardNetWorkTypeController.text.trim().isEmpty) {
+      _cardNetworkTypeError = "Select a card network";
+      valid = false;
+    } else {
+      _cardNetworkTypeError = null;
+    }
+
+    // Last four digits
+    final lastNums = _cardLastNumsController.text.trim();
+    if (lastNums.isEmpty) {
+      _lastNumsError = "Last 4 digits required";
+      valid = false;
+    } else if (lastNums.length != 4) {
+      _lastNumsError = "Must be exactly 4 digits";
+      valid = false;
+    } else {
+      _lastNumsError = null;
+    }
+
+    // Bank
+    if (_bankController.text.trim().isEmpty) {
+      _bankError = "Bank name is required";
+      valid = false;
+    } else {
+      _bankError = null;
+    }
+
+    // Balance
+    final balance = double.tryParse(_balanceController.text.trim());
+    if (balance == null || balance < 0) {
+      _balanceError = "Enter a valid amount";
+      valid = false;
+    } else {
+      _balanceError = null;
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+
+    return valid;
+  }
+
+  Future<void> saveCard(BuildContext context) async {
+    if (!_validate()) return;
+    if (!mounted) return;
+    setState(() {
+      _loading = true;
+    });
+    final card = Card(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      nickname: _nicknameController.text,
+      type: _cardTypeController.text,
+      network: _cardNetWorkTypeController.text,
+      last4: int.parse(_cardLastNumsController.text),
+      balance: double.parse(_balanceController.text),
+      bank: _bankController.text,
+      createdAt: DateTime.now(),
+    );
+    try {
+      await CardService.instance.saveCard(card);
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (context.mounted) {
+        Utils.showError(context, e.toString());
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -92,6 +206,7 @@ class _CardFormState extends State<CardForm> {
                 CustomTextInput(
                   controller: _nicknameController,
                   placeholder: "Nickname on card",
+                  errorText: _nicknameError,
                 ),
                 const SizedBox(height: 15),
                 const Text("Type", style: TextStyle(fontSize: 14)),
@@ -125,6 +240,7 @@ class _CardFormState extends State<CardForm> {
                       placeholder: "Click to select card type",
                       disabled: true,
                       prefixIcon: CupertinoIcons.creditcard,
+                      errorText: _cardTypeError,
                     ),
                   ),
                 ),
@@ -164,6 +280,7 @@ class _CardFormState extends State<CardForm> {
                       placeholder: "Click to select card network",
                       disabled: true,
                       prefixIcon: CupertinoIcons.antenna_radiowaves_left_right,
+                      errorText: _cardNetworkTypeError,
                     ),
                   ),
                 ),
@@ -176,6 +293,7 @@ class _CardFormState extends State<CardForm> {
                   placeholder: "Last four digit of your card",
                   inputType: TextInputType.number,
                   prefixIcon: CupertinoIcons.asterisk_circle,
+                  errorText: _lastNumsError,
                 ),
                 const SizedBox(height: 15),
 
@@ -185,16 +303,7 @@ class _CardFormState extends State<CardForm> {
                   controller: _bankController,
                   placeholder: "Bank Name",
                   prefixIcon: CupertinoIcons.house_alt,
-                ),
-                const SizedBox(height: 15),
-
-                const Text("Currency", style: TextStyle(fontSize: 14)),
-                const SizedBox(height: 5),
-                CustomTextInput(
-                  controller: _currencyController,
-                  placeholder: "Currency on card",
-                  prefixIcon: CupertinoIcons.money_dollar,
-                  disabled: true,
+                  errorText: _bankError,
                 ),
                 const SizedBox(height: 15),
 
@@ -203,6 +312,8 @@ class _CardFormState extends State<CardForm> {
                 CustomTextInput(
                   controller: _balanceController,
                   placeholder: "Amount on card",
+                  errorText: _balanceError,
+                  inputType: TextInputType.numberWithOptions(),
                 ),
                 const SizedBox(height: 15),
 
@@ -210,7 +321,7 @@ class _CardFormState extends State<CardForm> {
                   width: double.infinity,
                   child: CupertinoButton(
                     onPressed: () {
-                      // signUp(context);
+                      saveCard(context);
                     },
                     color: CupertinoColors.extraLightBackgroundGray,
                     child: _loading

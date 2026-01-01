@@ -1,18 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/enums/enums.dart';
+import 'package:flutter_application_1/models/user.dart';
+import 'package:flutter_application_1/providers/user_notifier.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _SettingsPageState extends ConsumerState<SettingsPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailControler = TextEditingController();
   final TextEditingController _currPasswordController = TextEditingController();
@@ -67,8 +70,23 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // ref.read(userProvider.notifier);
+
+  // }
+
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+
+    if (user != null && _nameController.text.isEmpty) {
+      _nameController.text = user.name;
+      _emailControler.text = user.email;
+      _currencyController.text = user.currency.name.toUpperCase();
+    }
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text("Manage your account"),
@@ -80,7 +98,6 @@ class _SettingsPageState extends State<SettingsPage> {
               severity: Severity.medium,
               action: AuthService.instance.logout,
             );
-            ;
           },
           icon: Icon(
             CupertinoIcons.square_arrow_right,

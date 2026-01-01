@@ -7,7 +7,7 @@ class AuthService {
   AuthService._();
   static final instance = AuthService._();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
   User? currentUser() => _auth.currentUser;
   Stream<User?> authStateChanges() => _auth.authStateChanges();
   Stream<bool> isAuthenticated() {
@@ -24,7 +24,7 @@ class AuthService {
         email: email,
         password: password,
       );
-      _db.collection("users").doc(credential.user?.uid.toString()).set({
+      db.collection("users").doc(credential.user?.uid.toString()).set({
         "name": name,
         "email": email,
         "currency": Currencies.ngn.name,
@@ -108,4 +108,6 @@ class AuthService {
       throw {"status": "error", "message": "Unexpected error occurred"};
     }
   }
+
+  String? get uid => _auth.currentUser?.uid;
 }

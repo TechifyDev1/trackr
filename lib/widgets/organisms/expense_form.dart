@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/enums/enums.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 
@@ -22,13 +23,12 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
   int _selectedCategory = 0;
   int _selectedType = 0;
-  late bool _loading;
+  bool _loading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _loading = false;
-  }
+  String? _titleError;
+  String? _amountError;
+  String? _categoryError;
+  String? _typeError;
 
   @override
   void dispose() {
@@ -76,6 +76,39 @@ class _ExpenseFormState extends State<ExpenseForm> {
     );
   }
 
+  void _validate() {
+    bool valid = true;
+    if (_titleController.text.isEmpty) {
+      _titleError = "Title cannot be empty";
+      valid = false;
+    }
+
+    if (_amountController.text.isEmpty) {
+      _amountError = "Amount cannot be empty";
+      valid = false;
+    }
+
+    if (_categoriescontroller.text.isEmpty) {
+      _categoryError = "Category must be selected";
+      valid = false;
+    }
+
+    if (_typeController.text.isEmpty) {
+      _typeError = "Type must be selected";
+      valid = false;
+    }
+  }
+
+  Future<void> saveExpense() async {
+    setState(() {
+      _loading = true;
+    });
+    try {
+      final db = AuthService.instance.db;
+      // await db.collection("expenses").doc(AuthService.instance.uid).set(data);
+    } catch (e) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -103,18 +136,19 @@ class _ExpenseFormState extends State<ExpenseForm> {
                   placeholder: "Amount of expense",
                   prefixIcon: CupertinoIcons.money_dollar,
                   inputType: TextInputType.numberWithOptions(),
+                  errorText: _amountError,
                 ),
                 const SizedBox(height: 15),
 
-                const Text("Currency", style: TextStyle(fontSize: 14)),
-                const SizedBox(height: 5),
-                CustomTextInput(
-                  controller: _amountController,
-                  placeholder: "Currency",
-                  prefixIcon: CupertinoIcons.money_euro_circle,
-                ),
-                const SizedBox(height: 15),
-
+                // const Text("Currency", style: TextStyle(fontSize: 14)),
+                // const SizedBox(height: 5),
+                // CustomTextInput(
+                //   controller: _amountController,
+                //   placeholder: "Currency",
+                //   prefixIcon: CupertinoIcons.money_euro_circle,
+                //   errorText: _cur,
+                // ),
+                // const SizedBox(height: 15),
                 const Text("Categories", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 GestureDetector(
@@ -144,6 +178,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                       placeholder: "Currency click to choose",
                       prefixIcon: CupertinoIcons.square_grid_2x2,
                       disabled: true,
+                      errorText: _categoryError,
                     ),
                   ),
                 ),
