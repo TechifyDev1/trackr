@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/models/card.dart';
+import 'package:flutter_application_1/providers/card_notifier.dart';
+import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // class CardModel extends Card {
 //   CardModel({
@@ -15,7 +19,7 @@ import 'package:flutter_application_1/models/card.dart';
 //   });
 // }
 
-class CustomCard extends StatelessWidget {
+class CustomCard extends ConsumerWidget {
   final Card card;
 
   const CustomCard({super.key, required this.card});
@@ -40,7 +44,18 @@ class CustomCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(userProvider);
+    final cards = ref.watch(cardsProvider);
+    final totalBal =
+        cards?.fold(0.0, (sum, card) {
+          return sum + card.balance;
+        }) ??
+        0.0;
+    final formattedAmount = NumberFormat.currency(
+      symbol: user!.currency.currencyIcon, // ₦, $, etc.
+      decimalDigits: 2,
+    ).format(totalBal);
     return Container(
       width: MediaQuery.sizeOf(context).width * 0.85,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -107,7 +122,7 @@ class CustomCard extends StatelessWidget {
                 style: TextStyle(color: CupertinoColors.white, fontSize: 14),
               ),
               Text(
-                "${card.currency.name.toUpperCase()} ${card.balance.toStringAsFixed(2)}",
+                formattedAmount,
                 style: const TextStyle(
                   color: CupertinoColors.white,
                   fontSize: 18,

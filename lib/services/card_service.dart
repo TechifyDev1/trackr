@@ -40,4 +40,15 @@ class CardService {
       return Card.fromMap(doc.data());
     }).toList();
   }
+
+  Stream<List<Card>> watchCards() {
+    return db
+        .collection("cards")
+        .doc(AuthService.instance.uid)
+        .collection("user_cards")
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.map((doc) => Card.fromMap(doc.data())).toList();
+        });
+  }
 }

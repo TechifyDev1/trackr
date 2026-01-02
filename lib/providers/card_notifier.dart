@@ -1,5 +1,6 @@
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/services/card_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 class CardNotifier extends StateNotifier<List<Card>?> {
@@ -15,4 +16,9 @@ class CardNotifier extends StateNotifier<List<Card>?> {
 
 final cardsProvider = StateNotifierProvider<CardNotifier, List<Card>?>((ref) {
   return CardNotifier();
+});
+
+final cardsProvider2 = StreamProvider.autoDispose<List<Card>>((ref) {
+  final cards = CardService.instance.watchCards();
+  return cards;
 });

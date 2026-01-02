@@ -10,7 +10,8 @@ class CardsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cards = ref.watch(cardsProvider);
+    final cards = ref.watch(cardsProvider2);
+
     return CupertinoPageScaffold(
       backgroundColor: CupertinoColors.darkBackgroundGray,
       navigationBar: CupertinoNavigationBar(
@@ -40,24 +41,35 @@ class CardsPage extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SafeArea(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [Text("Your cards"), Text(cards!.length.toString())],
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.29,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  children: List.generate(cards.length, (index) {
-                    final card = cards[index];
-                    return CustomCard(card: card);
-                  }),
-                ),
-              ),
-            ],
+          child: cards.when(
+            data: (cardsData) {
+              return Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: .spaceBetween,
+                    children: [
+                      Text("Your cards"),
+                      Text(cardsData.length.toString()),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.29,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      children: List.generate(cardsData.length, (index) {
+                        final card = cardsData[index];
+                        return CustomCard(card: card);
+                      }),
+                    ),
+                  ),
+                ],
+              );
+            },
+            error: (e, er) => Center(
+              child: Text("Error fetching your cards please try again $e"),
+            ),
+            loading: () => const CupertinoActivityIndicator(),
           ),
         ),
       ),

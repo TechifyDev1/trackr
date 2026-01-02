@@ -21,8 +21,10 @@ class HomePage extends ConsumerWidget {
           return sum + card.balance;
         }) ??
         0.0;
+    final currencyIcon = user?.currency.currencyIcon ?? "₦";
+
     final formattedAmount = NumberFormat.currency(
-      symbol: user!.currency.currencyIcon, // ₦, $, etc.
+      symbol: currencyIcon,
       decimalDigits: 2,
     ).format(totalBal);
 
@@ -38,7 +40,7 @@ class HomePage extends ConsumerWidget {
               backgroundImage: AssetImage("assets/images/qudus.png"),
             ),
             SizedBox(width: 10),
-            Text(user.name),
+            Text(user?.name ?? "--:--"),
           ],
         ),
         trailing: IconButton(
@@ -68,7 +70,7 @@ class HomePage extends ConsumerWidget {
                   crossAxisAlignment: .start,
                   children: [
                     const Text(
-                      "Available on Cards",
+                      "Available on Card",
                       style: TextStyle(
                         color: Color.fromARGB(255, 197, 197, 197),
                         fontSize: 14,
