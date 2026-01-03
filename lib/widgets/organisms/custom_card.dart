@@ -4,27 +4,12 @@ import 'package:flutter_application_1/providers/user_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-// class CardModel extends Card {
-//   CardModel({
-//     required super.id,
-//     required super.nickname,
-//     required super.type,
-//     required super.network,
-//     required super.last4,
-//     required super.balance,
-//     required super.bank,
-//     required super.createdAt,
-//     required super.currency,
-//   });
-// }
-
 class CustomCard extends ConsumerWidget {
   final Card card;
 
   const CustomCard({super.key, required this.card});
 
   Widget _buildNetworkLogo(String network) {
-    // Placeholder: you can replace with actual images later
     IconData icon;
     switch (network.toLowerCase()) {
       case "visa":
