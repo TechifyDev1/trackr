@@ -80,6 +80,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void signUp(BuildContext context) async {
+    if (_loading) return;
     if (!_validate()) return;
     if (!mounted) return;
     setState(() {

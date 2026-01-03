@@ -15,12 +15,11 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
-    final cards = ref.watch(cardsProvider);
-    final totalBal =
-        cards?.fold(0.0, (sum, card) {
-          return sum + card.balance;
-        }) ??
-        0.0;
+    final cardAsync = ref.watch(cardsProvider2);
+    final totalBalAsync = cardAsync.whenData(
+      (cards) => cards.fold(0.0, (sum, card) => sum + card.balance),
+    );
+    final totalBal = totalBalAsync.value ?? 0.0;
     final currencyIcon = user?.currency.currencyIcon ?? "₦";
 
     final formattedAmount = NumberFormat.currency(

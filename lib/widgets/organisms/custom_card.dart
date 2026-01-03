@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/models/card.dart';
-import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -46,16 +45,12 @@ class CustomCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
-    final cards = ref.watch(cardsProvider);
-    final totalBal =
-        cards?.fold(0.0, (sum, card) {
-          return sum + card.balance;
-        }) ??
-        0.0;
+    // final cards = ref.watch(cardsProvider2);
+    final bal = card.balance;
     final formattedAmount = NumberFormat.currency(
-      symbol: user!.currency.currencyIcon, // ₦, $, etc.
+      symbol: user!.currency.currencyIcon,
       decimalDigits: 2,
-    ).format(totalBal);
+    ).format(bal);
     return Container(
       width: MediaQuery.sizeOf(context).width * 0.85,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

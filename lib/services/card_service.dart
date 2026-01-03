@@ -21,7 +21,7 @@ class CardService {
         throw "Network error";
       }
       if (e.code == "permission-denied") {
-        throw "You are not allowed to create card";
+        throw "You are not allowed to create a card";
       }
       throw "unexpected error occured";
     } catch (e) {
@@ -37,7 +37,7 @@ class CardService {
         .collection("user_cards")
         .get();
     return res.docs.map((doc) {
-      return Card.fromMap(doc.data());
+      return Card.fromMap(doc.data(), doc.id);
     }).toList();
   }
 
@@ -48,7 +48,9 @@ class CardService {
         .collection("user_cards")
         .snapshots()
         .map((snapshot) {
-          return snapshot.docs.map((doc) => Card.fromMap(doc.data())).toList();
+          return snapshot.docs
+              .map((doc) => Card.fromMap(doc.data(), doc.id))
+              .toList();
         });
   }
 }

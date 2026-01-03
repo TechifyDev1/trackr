@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void login(BuildContext context) async {
+    if (_loading) return;
     if (!_validate()) return;
     if (!mounted) return;
     setState(() => _loading = true);

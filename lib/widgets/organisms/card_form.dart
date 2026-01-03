@@ -152,6 +152,7 @@ class _CardFormState extends State<CardForm> {
   }
 
   Future<void> saveCard(BuildContext context) async {
+    if (_loading) return;
     if (!_validate()) return;
     if (!mounted) return;
     setState(() {
@@ -207,6 +208,9 @@ class _CardFormState extends State<CardForm> {
                   controller: _nicknameController,
                   placeholder: "Nickname on card",
                   errorText: _nicknameError,
+                  onChanged: (value) {
+                    if (_nicknameError != null) _nicknameError = null;
+                  },
                 ),
                 const SizedBox(height: 15),
                 const Text("Type", style: TextStyle(fontSize: 14)),
@@ -241,6 +245,13 @@ class _CardFormState extends State<CardForm> {
                       disabled: true,
                       prefixIcon: CupertinoIcons.creditcard,
                       errorText: _cardTypeError,
+                      onChanged: (value) {
+                        if (_cardTypeError != null) {
+                          setState(() {
+                            _cardTypeError = null;
+                          });
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -281,6 +292,11 @@ class _CardFormState extends State<CardForm> {
                       disabled: true,
                       prefixIcon: CupertinoIcons.antenna_radiowaves_left_right,
                       errorText: _cardNetworkTypeError,
+                      onChanged: (value) {
+                        if (_cardNetworkTypeError != null) {
+                          _cardNetworkTypeError = null;
+                        }
+                      },
                     ),
                   ),
                 ),
@@ -294,6 +310,13 @@ class _CardFormState extends State<CardForm> {
                   inputType: TextInputType.number,
                   prefixIcon: CupertinoIcons.asterisk_circle,
                   errorText: _lastNumsError,
+                  onChanged: (value) {
+                    setState(() {
+                      if (_lastNumsError != null) {
+                        _lastNumsError = null;
+                      }
+                    });
+                  },
                 ),
                 const SizedBox(height: 15),
 
@@ -304,6 +327,13 @@ class _CardFormState extends State<CardForm> {
                   placeholder: "Bank Name",
                   prefixIcon: CupertinoIcons.house_alt,
                   errorText: _bankError,
+                  onChanged: (value) {
+                    setState(() {
+                      if (_bankError != null) {
+                        _bankError = null;
+                      }
+                    });
+                  },
                 ),
                 const SizedBox(height: 15),
 
@@ -314,6 +344,11 @@ class _CardFormState extends State<CardForm> {
                   placeholder: "Amount on card",
                   errorText: _balanceError,
                   inputType: TextInputType.numberWithOptions(),
+                  onChanged: (value) {
+                    setState(() {
+                      if (_balanceError != null) _balanceError = null;
+                    });
+                  },
                 ),
                 const SizedBox(height: 15),
 

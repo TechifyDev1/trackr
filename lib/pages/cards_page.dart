@@ -69,7 +69,7 @@ class CardsPage extends ConsumerWidget {
             error: (e, er) => Center(
               child: Text("Error fetching your cards please try again $e"),
             ),
-            loading: () => const CupertinoActivityIndicator(),
+            loading: () => Center(child: const CupertinoActivityIndicator()),
           ),
         ),
       ),

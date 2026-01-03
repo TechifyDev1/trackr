@@ -9,6 +9,7 @@ class Card {
   final String bank;
   final DateTime createdAt;
   final double balance;
+  final String? docId;
 
   const Card({
     required this.id,
@@ -19,9 +20,10 @@ class Card {
     required this.balance,
     required this.bank,
     required this.createdAt,
+    this.docId,
   });
 
-  factory Card.fromMap(Map<String, dynamic>? card) {
+  factory Card.fromMap(Map<String, dynamic>? card, String docId) {
     return Card(
       id: card?["id"],
       nickname: card?["nickname"],
@@ -31,6 +33,7 @@ class Card {
       balance: (card?["balance"] as num).toDouble(),
       bank: card?["bank"],
       createdAt: (card?["createdAt"] as Timestamp).toDate(),
+      docId: docId,
     );
   }
 
@@ -44,6 +47,7 @@ class Card {
       "balance": balance,
       "bank": bank,
       "createdAt": createdAt,
+      "docId": docId,
     };
   }
 }

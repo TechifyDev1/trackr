@@ -2,6 +2,7 @@ import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 
 class Expense {
+  final String id;
   final String title;
   final double amount;
   final DateTime date;
@@ -9,8 +10,10 @@ class Expense {
   final String cardId;
   final String notes;
   final TransactionType type;
+  final String? cardDocId;
 
   const Expense({
+    required this.id,
     required this.title,
     required this.amount,
     required this.date,
@@ -18,10 +21,12 @@ class Expense {
     required this.cardId,
     required this.notes,
     required this.type,
+    this.cardDocId,
   });
 
   factory Expense.fromMap(Map<String, dynamic>? expense) {
     return Expense(
+      id: expense?["id"],
       title: expense?["title"],
       amount: expense?["amount"],
       date: expense?["date"],
@@ -29,18 +34,21 @@ class Expense {
       cardId: expense?["cardId"],
       notes: expense?["notes"],
       type: expense?["type"],
+      cardDocId: expense?["cardDocId"],
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
+      "id": id,
       "title": title,
       "amount": amount,
       "date": date,
-      "category": category,
+      "category": category.name,
       "cardId": cardId,
       "notes": notes,
-      "type": type,
+      "type": type.name,
+      "cardDocId": cardDocId,
     };
   }
 }
