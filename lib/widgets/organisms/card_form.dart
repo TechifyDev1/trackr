@@ -19,8 +19,6 @@ const List<String> _cardNetworkType = [
   "Visa",
   "MasterCard",
   "Verve",
-  "America Express (Amex)",
-  "Discover",
   "UnionPage",
 ];
 const double _kItemExtent = 32.0;

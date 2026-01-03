@@ -1,16 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/expense_detail_page.dart';
+import 'package:flutter_application_1/providers/expense_notifier.dart';
+import 'package:flutter_application_1/providers/user_notifier.dart';
 import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 import 'package:flutter_application_1/widgets/organisms/expense_form.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpensesPage extends StatelessWidget {
+class ExpensesPage extends ConsumerWidget {
   const ExpensesPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final searchController = TextEditingController();
+    final expensesAsync = ref.watch(expenseProvider);
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -36,27 +41,41 @@ class ExpensesPage extends StatelessWidget {
 
               Expanded(
                 child: ListView(
-                  children: const [
+                  children: [
                     Text("Today", style: TextStyle(fontSize: 12)),
                     SizedBox(height: 5),
-                    ExpensesList(
-                      title: "AT & T",
-                      subtitle: "Unlimited Family plan",
-                      price: "39.99",
-                    ),
-                    SizedBox(height: 5),
-                    ExpensesList(
-                      title: "CC subscription",
-                      subtitle: "Unlimited Family plan",
-                      price: "39.99",
-                    ),
-                    SizedBox(height: 12),
-                    Text("Yesterday", style: TextStyle(fontSize: 12)),
-                    SizedBox(height: 5),
-                    ExpensesList(
-                      title: "Netflix",
-                      subtitle: "Basic plan",
-                      price: "39.99",
+                    ...expensesAsync.when(
+                      data: (expenses) {
+                        return expenses.map(
+                          (exp) => GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) =>
+                                      ExpenseDetailPage(expense: exp),
+                                ),
+                              );
+                            },
+                            child: ExpensesList(
+                              title: exp.title,
+                              subtitle: exp.category.name,
+                              price: exp.amount,
+                              transactionType: exp.type,
+                            ),
+                          ),
+                        );
+                      },
+                      error: (e, er) {
+                        debugPrint(e.toString());
+                        debugPrint(er.toString());
+                        return [
+                          Center(child: Text("Error loading your expenses")),
+                        ];
+                      },
+                      loading: () => [
+                        Center(child: CupertinoActivityIndicator(radius: 25)),
+                      ],
                     ),
                   ],
                 ),

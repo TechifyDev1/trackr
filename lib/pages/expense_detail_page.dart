@@ -1,10 +1,44 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application_1/extensions.dart';
+import 'package:flutter_application_1/models/card.dart';
+import 'package:flutter_application_1/models/expense.dart';
+import 'package:flutter_application_1/providers/card_notifier.dart';
+import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-class ExpenseDetailPage extends StatelessWidget {
-  const ExpenseDetailPage({super.key});
+class ExpenseDetailPage extends ConsumerWidget {
+  final Expense expense;
+  const ExpenseDetailPage({super.key, required this.expense});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cardAsync = ref.watch(cardsProvider2);
+    // final cards = cardAsync.whenData((card) => card);
+    final user = ref.watch(userProvider);
+
+    List<Card> cardse = [];
+    cardAsync.when(
+      data: (cards) {
+        cardse = cards;
+      },
+      error: (e, er) {
+        debugPrint(e.toString());
+      },
+      loading: () => debugPrint("Loading...."),
+    );
+    Card usedCard = cardse.firstWhere(
+      (card) => card.docId == expense.cardDocId,
+    );
+
+    final formattedAmount = NumberFormat.currency(
+      symbol: user?.currency.currencyIcon,
+      decimalDigits: 2,
+    ).format(expense.amount);
+
+    // print(usedCard.bank);
+
+    // debugPrint(usedCard.toString());
     return CupertinoPageScaffold(
       navigationBar: const CupertinoNavigationBar(
         middle: Text('Expense Details'),
@@ -18,9 +52,9 @@ class ExpenseDetailPage extends StatelessWidget {
               // Amount
               Center(
                 child: Column(
-                  children: const [
+                  children: [
                     Text(
-                      '₦4,500',
+                      formattedAmount,
                       style: TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
@@ -28,7 +62,7 @@ class ExpenseDetailPage extends StatelessWidget {
                     ),
                     SizedBox(height: 6),
                     Text(
-                      'Lauch with friends • Food',
+                      '${expense.title} • ${expense.category.name}',
                       style: TextStyle(fontSize: 16, color: Color(0xFF8E8E93)),
                     ),
                   ],
@@ -41,17 +75,17 @@ class ExpenseDetailPage extends StatelessWidget {
               _InfoRow(
                 icon: CupertinoIcons.calendar,
                 label: 'Date',
-                value: '23 Dec 2025, 2:45 PM',
+                value: DateFormat('EEEE, d yyyy hh:mm a').format(expense.date),
               ),
               _InfoRow(
                 icon: CupertinoIcons.creditcard,
                 label: 'Payment',
-                value: 'Debit Card',
+                value: "${usedCard.bank}' ${usedCard.network}",
               ),
               _InfoRow(
                 icon: CupertinoIcons.folder,
                 label: 'Category',
-                value: 'Food',
+                value: expense.category.name.capitalize(),
               ),
 
               const SizedBox(height: 30),
@@ -62,8 +96,8 @@ class ExpenseDetailPage extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Lunch with friends at campus café',
+              Text(
+                expense.notes,
                 style: TextStyle(
                   fontSize: 16,
                   color: CupertinoColors.systemGrey,
@@ -77,12 +111,14 @@ class ExpenseDetailPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CupertinoButton(
+                      padding: EdgeInsets.all(8),
                       color: CupertinoColors.systemGrey5,
                       onPressed: () {},
                       child: const Text(
                         'Edit',
                         style: TextStyle(
                           color: CupertinoColors.extraLightBackgroundGray,
+                          fontWeight: .bold,
                         ),
                       ),
                     ),
@@ -90,9 +126,13 @@ class ExpenseDetailPage extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: CupertinoButton(
+                      padding: EdgeInsets.all(8),
                       color: CupertinoColors.systemRed,
                       onPressed: () {},
-                      child: const Text('Delete'),
+                      child: Text(
+                        'Delete',
+                        style: TextStyle(fontWeight: .bold),
+                      ),
                     ),
                   ),
                 ],

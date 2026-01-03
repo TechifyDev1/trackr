@@ -55,4 +55,28 @@ class ExpenseService {
       throw "Unexpected error occurred";
     }
   }
+
+  Future<List<Expense>> getExpenses() async {
+    final res = await db
+        .collection("expenses")
+        .doc(AuthService.instance.uid)
+        .collection("users_expenses")
+        .get();
+    return res.docs.map((doc) {
+      return Expense.fromMap(doc.data());
+    }).toList();
+  }
+
+  Stream<List<Expense>> watchExpenses() {
+    return db
+        .collection("expenses")
+        .doc(AuthService.instance.uid)
+        .collection("users_expenses")
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => Expense.fromMap(doc.data()))
+              .toList();
+        });
+  }
 }
