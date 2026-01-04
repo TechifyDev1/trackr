@@ -6,16 +6,46 @@ import 'package:flutter_application_1/models/expense.dart';
 import 'package:flutter_application_1/pages/edit_expense_form.dart';
 import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_application_1/services/expense_service.dart';
 import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class ExpenseDetailPage extends ConsumerWidget {
+class ExpenseDetailPage extends ConsumerStatefulWidget {
   final Expense expense;
   const ExpenseDetailPage({super.key, required this.expense});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ExpenseDetailPage> createState() => _ExpenseDetailPageState();
+}
+
+class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
+  bool loading = false;
+
+  void deleteExpense(BuildContext context) async {
+    if (loading) return;
+    setState(() {
+      loading = true;
+    });
+    try {
+      await ExpenseService.instance.deleteExpense(expense: widget.expense);
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      if (context.mounted) {
+        Utils.showError(context, e.toString());
+      }
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final cardAsync = ref.watch(cardsProvider2);
     // final cards = cardAsync.whenData((card) => card);
     final user = ref.watch(userProvider);
@@ -31,13 +61,13 @@ class ExpenseDetailPage extends ConsumerWidget {
       loading: () => debugPrint("Loading...."),
     );
     Card usedCard = cardse.firstWhere(
-      (card) => card.docId == expense.cardDocId,
+      (card) => card.docId == widget.expense.cardDocId,
     );
 
     final formattedAmount = NumberFormat.currency(
       symbol: user?.currency.currencyIcon,
       decimalDigits: 2,
-    ).format(expense.amount);
+    ).format(widget.expense.amount);
 
     // print(usedCard.bank);
 
@@ -65,7 +95,7 @@ class ExpenseDetailPage extends ConsumerWidget {
                     ),
                     SizedBox(height: 6),
                     Text(
-                      '${expense.title} • ${expense.category.name}',
+                      '${widget.expense.title} • ${widget.expense.category.name}',
                       style: TextStyle(fontSize: 16, color: Color(0xFF8E8E93)),
                     ),
                   ],
@@ -78,7 +108,9 @@ class ExpenseDetailPage extends ConsumerWidget {
               _InfoRow(
                 icon: CupertinoIcons.calendar,
                 label: 'Date',
-                value: DateFormat('EEEE, d yyyy hh:mm a').format(expense.date),
+                value: DateFormat(
+                  'EEEE, d yyyy hh:mm a',
+                ).format(widget.expense.date),
               ),
               _InfoRow(
                 icon: CupertinoIcons.creditcard,
@@ -88,7 +120,7 @@ class ExpenseDetailPage extends ConsumerWidget {
               _InfoRow(
                 icon: CupertinoIcons.folder,
                 label: 'Category',
-                value: expense.category.name.capitalize(),
+                value: widget.expense.category.name.capitalize(),
               ),
 
               const SizedBox(height: 30),
@@ -100,7 +132,7 @@ class ExpenseDetailPage extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                expense.notes,
+                widget.expense.notes,
                 style: TextStyle(
                   fontSize: 16,
                   color: CupertinoColors.systemGrey,
@@ -119,7 +151,7 @@ class ExpenseDetailPage extends ConsumerWidget {
                       onPressed: () {
                         Utils.showPagePopup(
                           context,
-                          EditExpenseForm(expense: expense),
+                          EditExpenseForm(expense: widget.expense),
                         );
                       },
                       child: const Text(
@@ -140,15 +172,16 @@ class ExpenseDetailPage extends ConsumerWidget {
                         Utils.showConfirmationDialog(
                           context,
                           message:
-                              "Are you sure you want to delete this expense?",
+                              "Deleting this transaction will update your card balance, do you want to proceed?",
                           severity: Severity.high,
-                          action: () {},
+                          action: () {
+                            deleteExpense(context);
+                          },
                         );
                       },
-                      child: Text(
-                        'Delete',
-                        style: TextStyle(fontWeight: .bold),
-                      ),
+                      child: loading
+                          ? CupertinoActivityIndicator()
+                          : Text('Delete', style: TextStyle(fontWeight: .bold)),
                     ),
                   ),
                 ],

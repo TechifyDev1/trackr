@@ -139,7 +139,6 @@ class ExpenseService {
 
         transaction.update(expenseRef, updatedExpense.toMap());
       } on FirebaseException catch (e) {
-        print(e);
         if (e.code == "unavailable") throw "Network error";
         if (e.code == "permission-denied") {
           throw "You are not allowed to update expenses";
@@ -149,5 +148,44 @@ class ExpenseService {
         throw e.toString();
       }
     });
+  }
+
+  Future<void> deleteExpense({required Expense expense}) async {
+    final cardRef = db
+        .collection("cards")
+        .doc(AuthService.instance.uid)
+        .collection("user_cards")
+        .doc(expense.cardDocId);
+
+    final expenseRef = db
+        .collection("expenses")
+        .doc(AuthService.instance.uid)
+        .collection("users_expenses")
+        .doc(expense.id);
+    try {
+      await db.runTransaction((transaction) async {
+        final cardSnap = await transaction.get(cardRef);
+        final expenseSnap = await transaction.get(expenseRef);
+        if (!cardSnap.exists) throw "Card not found";
+        if (!expenseSnap.exists) throw "Expense not found";
+        double balance = (cardSnap.data()!["balance"] as num).toDouble();
+        if (expense.type == TransactionType.deposit) {
+          balance -= expense.amount;
+        } else {
+          balance += expense.amount;
+        }
+
+        transaction.update(cardRef, {"balance": balance});
+        transaction.delete(expenseRef);
+      });
+    } on FirebaseException catch (e) {
+      if (e.code == "unavailable") throw "Network error";
+      if (e.code == "permission-denied") {
+        throw "You are not allowed to update expenses";
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      throw e.toString();
+    }
   }
 }
