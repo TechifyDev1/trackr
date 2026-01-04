@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_application_1/models/user.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/user_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 class UserNotifier extends StateNotifier<User?> {
@@ -28,4 +30,9 @@ class UserNotifier extends StateNotifier<User?> {
 
 final userProvider = StateNotifierProvider<UserNotifier, User?>((ref) {
   return UserNotifier();
+});
+
+final userProvider2 = StreamProvider.autoDispose<User>((ref) {
+  final user = UserService.instance.watchUser();
+  return user;
 });

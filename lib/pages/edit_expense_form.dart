@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/models/expense.dart';
 import 'package:flutter_application_1/services/expense_service.dart';
@@ -70,9 +71,10 @@ class _EditExpenseFormState extends State<EditExpenseForm> {
 
     setState(() => _loading = true);
 
+    if (kDebugMode) print(_amountController.text);
+
     try {
       await ExpenseService.instance.updateExpense(
-        oldExpense: widget.expense,
         updatedExpense: widget.expense.copyWith(
           title: _titleController.text.trim(),
           amount: double.parse(_amountController.text),
@@ -112,6 +114,7 @@ class _EditExpenseFormState extends State<EditExpenseForm> {
                 controller: _titleController,
                 errorText: _titleError,
                 placeholder: "Title",
+                prefixIcon: CupertinoIcons.pencil,
               ),
 
               const SizedBox(height: 12),
@@ -122,6 +125,7 @@ class _EditExpenseFormState extends State<EditExpenseForm> {
                 inputType: TextInputType.number,
                 errorText: _amountError,
                 placeholder: "New Amount",
+                prefixIcon: CupertinoIcons.money_dollar,
               ),
 
               const SizedBox(height: 12),
@@ -130,6 +134,7 @@ class _EditExpenseFormState extends State<EditExpenseForm> {
               CustomTextInput(
                 controller: _noteController,
                 placeholder: "Optional",
+                prefixIcon: CupertinoIcons.book,
               ),
 
               const SizedBox(height: 20),

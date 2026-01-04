@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart' show debugPrint;
 import 'package:flutter_application_1/models/expense.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 
 class ExpenseService {
   ExpenseService._();
@@ -90,86 +92,62 @@ class ExpenseService {
         });
   }
 
-  Future<void> updateExpense({
-    required Expense oldExpense,
-    required Expense updatedExpense,
-  }) async {
-    try {
-      final oldCardRef = db
-          .collection("cards")
-          .doc(AuthService.instance.uid)
-          .collection("user_cards")
-          .doc(oldExpense.cardDocId);
+  Future<void> updateExpense({required Expense updatedExpense}) async {
+    final cardRef = db
+        .collection("cards")
+        .doc(AuthService.instance.uid)
+        .collection("user_cards")
+        .doc(updatedExpense.cardDocId);
 
-      final newCardRef = db
-          .collection("cards")
-          .doc(AuthService.instance.uid)
-          .collection("user_cards")
-          .doc(updatedExpense.cardDocId);
+    final expenseRef = db
+        .collection("expenses")
+        .doc(AuthService.instance.uid)
+        .collection("users_expenses")
+        .doc(updatedExpense.id);
 
-      final expenseRef = db
-          .collection("expenses")
-          .doc(AuthService.instance.uid)
-          .collection("users_expenses")
-          .doc(oldExpense.id);
+    await db.runTransaction((transaction) async {
+      try {
+        final card = await transaction.get(cardRef);
+        final expense = await transaction.get(expenseRef);
+        if (!card.exists) throw "Card not found for this expense";
+        if (!expense.exists) throw "Card to update not found";
+        final existingExpense = Expense.fromMap(expense.data());
+        // if (existingExpense.id != updatedExpense.id) {
+        //   throw "You don't have permission to edit this expense";
+        // }
 
-      await db.runTransaction((transaction) async {
-        // Fetch old card
-        final oldCardSnap = await transaction.get(oldCardRef);
-        if (!oldCardSnap.exists) {
-          throw "Original card not found";
-        }
+        double balance = (card.data()!["balance"] as num).toDouble();
 
-        double oldCardBalance = (oldCardSnap.data()!["balance"] as num)
-            .toDouble();
-
-        // Reverse old transaction
-        if (oldExpense.type.name == "expense") {
-          oldCardBalance += oldExpense.amount;
+        if (existingExpense.type == TransactionType.deposit) {
+          balance -= existingExpense.amount;
         } else {
-          oldCardBalance -= oldExpense.amount;
+          balance += existingExpense.amount;
         }
 
-        transaction.update(oldCardRef, {"balance": oldCardBalance});
-
-        // Fetch new card (may be same)
-        final newCardSnap = oldExpense.cardDocId == updatedExpense.cardDocId
-            ? oldCardSnap
-            : await transaction.get(newCardRef);
-
-        if (!newCardSnap.exists) {
-          throw "Selected card not found";
+        if (updatedExpense.type == TransactionType.expense &&
+            balance < updatedExpense.amount) {
+          throw "Insufficient balance on this card, fund the card and try again";
         }
 
-        double newCardBalance = (newCardSnap.data()!["balance"] as num)
-            .toDouble();
-
-        // Validate balance if new transaction is expense
-        if (updatedExpense.type.name == "expense" &&
-            newCardBalance < updatedExpense.amount) {
-          throw "Insufficient balance on selected card";
-        }
-
-        // Apply new transaction
-        if (updatedExpense.type.name == "expense") {
-          newCardBalance -= updatedExpense.amount;
+        if (updatedExpense.type == TransactionType.deposit) {
+          balance += updatedExpense.amount;
         } else {
-          newCardBalance += updatedExpense.amount;
+          balance -= updatedExpense.amount;
         }
 
-        transaction.update(newCardRef, {"balance": newCardBalance});
+        transaction.update(cardRef, {"balance": balance});
 
-        // Update expense document
         transaction.update(expenseRef, updatedExpense.toMap());
-      });
-    } on FirebaseException catch (e) {
-      if (e.code == "unavailable") {
-        throw "Network error";
+      } on FirebaseException catch (e) {
+        print(e);
+        if (e.code == "unavailable") throw "Network error";
+        if (e.code == "permission-denied") {
+          throw "You are not allowed to update expenses";
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+        throw e.toString();
       }
-      if (e.code == "permission-denied") {
-        throw "You are not allowed to update expenses";
-      }
-      throw "Failed to update expense";
-    }
+    });
   }
 }
