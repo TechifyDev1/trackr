@@ -3,7 +3,6 @@ import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/models/expense.dart';
 import 'package:flutter_application_1/providers/card_notifier.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/services/expense_service.dart';
 import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
@@ -131,7 +130,10 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
   }
 
   Future<void> saveExpense(BuildContext context) async {
-    if (double.parse(_amountController.text) > cards![_selectedCard].balance) {
+    final amount = double.tryParse(_amountController.text) ?? 0.0;
+    final selectedCard = cards![_selectedCard];
+    final isExpense = _typeController.text.toLowerCase() == "expense";
+    if (isExpense && amount > selectedCard.balance) {
       if (context.mounted) {
         Utils.showError(
           context,
@@ -170,7 +172,9 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
       if (context.mounted) Navigator.pop(context);
     } catch (e) {
       debugPrint(e.toString());
-      if (mounted) _loading = false;
+      setState(() {
+        _loading = false;
+      });
       if (context.mounted) Utils.showError(context, e.toString());
     }
   }

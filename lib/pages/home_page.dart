@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/extensions.dart';
 import 'package:flutter_application_1/pages/expense_detail_page.dart';
 import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/providers/expense_notifier.dart';
@@ -235,7 +236,8 @@ class HomePage extends ConsumerWidget {
                     ),
                     ...expensesAsync.when(
                       data: (expenses) {
-                        return expenses.map(
+                        final previewExpenses = expenses.take(4);
+                        return previewExpenses.map(
                           (exp) => GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -248,7 +250,7 @@ class HomePage extends ConsumerWidget {
                             },
                             child: ExpensesList(
                               title: exp.title,
-                              subtitle: exp.category.name,
+                              subtitle: exp.category.name.capitalize(),
                               price: exp.amount,
                               transactionType: exp.type,
                             ),
@@ -263,7 +265,7 @@ class HomePage extends ConsumerWidget {
                         ];
                       },
                       loading: () => [
-                        Center(child: CupertinoActivityIndicator(radius: 25)),
+                        Center(child: CupertinoActivityIndicator()),
                       ],
                     ),
                   ],

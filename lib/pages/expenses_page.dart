@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/extensions.dart';
 import 'package:flutter_application_1/pages/expense_detail_page.dart';
 import 'package:flutter_application_1/providers/expense_notifier.dart';
-import 'package:flutter_application_1/providers/user_notifier.dart';
 import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/custom_text_input.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
@@ -59,7 +59,7 @@ class ExpensesPage extends ConsumerWidget {
                             },
                             child: ExpensesList(
                               title: exp.title,
-                              subtitle: exp.category.name,
+                              subtitle: exp.category.name.capitalize(),
                               price: exp.amount,
                               transactionType: exp.type,
                             ),

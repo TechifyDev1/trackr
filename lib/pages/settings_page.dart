@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/enums/enums.dart';
-import 'package:flutter_application_1/models/user.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/utils.dart';

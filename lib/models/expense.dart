@@ -39,6 +39,30 @@ class Expense {
     );
   }
 
+  Expense copyWith({
+    String? id,
+    String? title,
+    double? amount,
+    DateTime? date,
+    ExpenseCategory? category,
+    String? cardId,
+    String? notes,
+    TransactionType? type,
+    String? cardDocId,
+  }) {
+    return Expense(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      amount: amount ?? this.amount,
+      date: date ?? this.date,
+      category: category ?? this.category,
+      cardId: cardId ?? this.cardId,
+      notes: notes ?? this.notes,
+      type: type ?? this.type,
+      cardDocId: cardDocId ?? this.cardDocId,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       "id": id,

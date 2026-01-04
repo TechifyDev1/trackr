@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/extensions.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/models/expense.dart';
+import 'package:flutter_application_1/pages/edit_expense_form.dart';
 import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -113,7 +116,12 @@ class ExpenseDetailPage extends ConsumerWidget {
                     child: CupertinoButton(
                       padding: EdgeInsets.all(8),
                       color: CupertinoColors.systemGrey5,
-                      onPressed: () {},
+                      onPressed: () {
+                        Utils.showPagePopup(
+                          context,
+                          EditExpenseForm(expense: expense),
+                        );
+                      },
                       child: const Text(
                         'Edit',
                         style: TextStyle(
@@ -128,7 +136,15 @@ class ExpenseDetailPage extends ConsumerWidget {
                     child: CupertinoButton(
                       padding: EdgeInsets.all(8),
                       color: CupertinoColors.systemRed,
-                      onPressed: () {},
+                      onPressed: () {
+                        Utils.showConfirmationDialog(
+                          context,
+                          message:
+                              "Are you sure you want to delete this expense?",
+                          severity: Severity.high,
+                          action: () {},
+                        );
+                      },
                       child: Text(
                         'Delete',
                         style: TextStyle(fontWeight: .bold),
