@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/pages/card_details_page.dart';
 import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/widgets/organisms/card_form.dart';
 import 'package:flutter_application_1/widgets/organisms/custom_card.dart';
@@ -52,15 +53,29 @@ class CardsPage extends ConsumerWidget {
                       Text(cardsData.length.toString()),
                     ],
                   ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.29,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      children: List.generate(cardsData.length, (index) {
-                        final card = cardsData[index];
-                        return CustomCard(card: card);
-                      }),
+                  Expanded(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.29,
+                      child: ListView(
+                        scrollDirection: .vertical,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        children: List.generate(cardsData.length, (index) {
+                          final card = cardsData[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) {
+                                    return CardDetailsPage();
+                                  },
+                                ),
+                              );
+                            },
+                            child: CustomCard(card: card),
+                          );
+                        }),
+                      ),
                     ),
                   ),
                 ],
