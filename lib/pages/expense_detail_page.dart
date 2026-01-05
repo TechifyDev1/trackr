@@ -80,7 +80,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             children: [
               // Amount
               Center(
@@ -88,10 +88,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
                   children: [
                     Text(
                       formattedAmount,
-                      style: TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 36, fontWeight: .bold),
                     ),
                     SizedBox(height: 6),
                     Text(
@@ -166,7 +163,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: CupertinoButton(
-                      padding: EdgeInsets.all(8),
+                      padding: .all(8),
                       color: CupertinoColors.systemRed,
                       onPressed: () {
                         Utils.showConfirmationDialog(
@@ -208,14 +205,14 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const .only(bottom: 16),
       child: Row(
         children: [
           Icon(icon, color: CupertinoColors.systemGrey),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   label,
