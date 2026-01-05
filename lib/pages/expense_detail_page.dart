@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/extensions.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/models/expense.dart';
@@ -170,7 +169,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
                           context,
                           message:
                               "Deleting this transaction will update your card balance, do you want to proceed?",
-                          severity: Severity.high,
+                          severity: .high,
                           action: () {
                             deleteExpense(context);
                           },
