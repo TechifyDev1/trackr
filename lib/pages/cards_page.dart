@@ -67,7 +67,7 @@ class CardsPage extends ConsumerWidget {
                                 context,
                                 CupertinoPageRoute(
                                   builder: (context) {
-                                    return CardDetailsPage();
+                                    return CardDetailsPage(card: card);
                                   },
                                 ),
                               );

@@ -1,15 +1,41 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/extensions.dart';
+import 'package:flutter_application_1/models/card.dart';
+import 'package:flutter_application_1/models/user.dart';
 import 'package:flutter_application_1/pages/expense_detail_page.dart';
 import 'package:flutter_application_1/providers/expense_notifier.dart';
+import 'package:flutter_application_1/providers/user_notifier.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-class CardDetailsPage extends ConsumerWidget {
-  const CardDetailsPage({super.key});
+class CardDetailsPage extends ConsumerStatefulWidget {
+  final Card card;
+  const CardDetailsPage({super.key, required this.card});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CardDetailsPage> createState() => _CardDetailsPageState();
+}
+
+class _CardDetailsPageState extends ConsumerState<CardDetailsPage> {
+  @override
+  Widget build(BuildContext context) {
     final expensesAsync = ref.watch(expenseProvider);
+    final user = ref.watch(userProvider2);
+    User? userData;
+    user.when(
+      data: (data) {
+        setState(() {
+          userData = data;
+        });
+      },
+      loading: () => debugPrint("Loading..."),
+      error: (error, stackTrace) => debugPrint(error.toString()),
+    );
+    final formattedAmount = NumberFormat.currency(
+      symbol: userData?.currency.currencyIcon,
+      decimalDigits: 2,
+    ).format(widget.card.balance);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(middle: Text("Card details")),
       child: SafeArea(
@@ -39,7 +65,7 @@ class CardDetailsPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Main Card",
+                          widget.card.nickname,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -57,7 +83,7 @@ class CardDetailsPage extends ConsumerWidget {
                         const SizedBox(height: 6),
 
                         Text(
-                          "₦231,234,444.00",
+                          formattedAmount,
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,
@@ -75,7 +101,7 @@ class CardDetailsPage extends ConsumerWidget {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              "GTBank • Visa",
+                              "${widget.card.bank} • ${widget.card.type} • ${widget.card.network}",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: CupertinoColors.systemGrey,
@@ -112,8 +138,20 @@ class CardDetailsPage extends ConsumerWidget {
                 SizedBox(height: 10),
                 ...expensesAsync.when(
                   data: (expenses) {
-                    final previewExpenses = expenses.take(4);
-                    return previewExpenses.map(
+                    final cardExpenses = expenses
+                        .where((exp) => exp.cardDocId == widget.card.docId)
+                        .toList();
+                    if (cardExpenses.isEmpty) {
+                      return const [
+                        Center(
+                          child: Text(
+                            "No recent expenses",
+                            style: TextStyle(color: CupertinoColors.systemGrey),
+                          ),
+                        ),
+                      ];
+                    }
+                    return cardExpenses.map(
                       (exp) => GestureDetector(
                         onTap: () {
                           Navigator.push(
