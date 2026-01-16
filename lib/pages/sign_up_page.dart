@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_application_1/auth_gate.dart';
+import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/pages/login_page.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/utils.dart';
@@ -100,7 +101,11 @@ class _SignUpPageState extends State<SignUpPage> {
     } catch (e) {
       if (kDebugMode) print(e);
       if (context.mounted) {
-        Utils.showError(context, e.toString());
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
       }
       if (!mounted) return;
       setState(() {

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter_application_1/auth_gate.dart';
+import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/pages/sign_up_page.dart';
 import 'package:flutter_application_1/services/auth_service.dart';
 import 'package:flutter_application_1/utils.dart';
@@ -73,7 +74,11 @@ class _LoginPageState extends State<LoginPage> {
       if (kDebugMode) print(e);
       if (context.mounted) {
         final errData = e as Map<String, dynamic>;
-        Utils.showError(context, errData["message"].toString());
+        Utils.showDialog(
+          context: context,
+          message: errData["message"].toString(),
+          severity: Severity.high,
+        );
       }
       if (!mounted) return;
       setState(() {

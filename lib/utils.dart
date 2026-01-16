@@ -2,15 +2,36 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/enums/enums.dart';
 
 class Utils {
-  static void showError(BuildContext context, String err) {
+  static void showDialog({
+    required BuildContext context,
+    required String message,
+    required Severity severity,
+  }) {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) => CupertinoAlertDialog(
-        title: const Text(
-          "Error",
-          style: TextStyle(color: CupertinoColors.destructiveRed),
+        // Title row with icon + text
+        title: Row(
+          children: [
+            Icon(severity.icon, color: severity.color, size: 24),
+            const SizedBox(width: 8),
+            Text(
+              severity == Severity.normal
+                  ? "Success"
+                  : severity == Severity.medium
+                  ? "Warning"
+                  : "Error",
+              style: TextStyle(
+                color: severity.color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
-        content: Text(err),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(message),
+        ),
         actions: [
           CupertinoDialogAction(
             isDefaultAction: true,
@@ -19,7 +40,7 @@ class Utils {
             },
             child: const Text(
               'Ok',
-              style: TextStyle(color: CupertinoColors.extraLightBackgroundGray),
+              style: TextStyle(color: CupertinoColors.activeBlue),
             ),
           ),
         ],
@@ -68,6 +89,25 @@ class Utils {
           ],
         );
       },
+    );
+  }
+
+  static Widget archivedBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(223, 142, 142, 147),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Text(
+        "ARCHIVED",
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          color: CupertinoColors.white,
+          letterSpacing: 0.6,
+        ),
+      ),
     );
   }
 }

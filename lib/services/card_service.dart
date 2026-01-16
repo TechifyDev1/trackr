@@ -30,6 +30,51 @@ class CardService {
     }
   }
 
+  Future<void> archiveCard(String cardId) async {
+    try {
+      await db
+          .collection("cards")
+          .doc(AuthService.instance.uid)
+          .collection("user_cards")
+          .doc(cardId)
+          .update({"archived": true});
+    } on FirebaseException catch (e) {
+      if (e.code == "unavailable") {
+        throw "Network error";
+      }
+      if (e.code == "permission-denied") {
+        throw "You are not allowed archive this card";
+      }
+      throw "unexpected error occured";
+    } catch (e) {
+      if (kDebugMode) print(e);
+      throw "unexpected error occured";
+    }
+  }
+
+  Future<void> activate(String cardId) async {
+    try {
+      await db
+          .collection("cards")
+          .doc(AuthService.instance.uid)
+          .collection("user_cards")
+          .doc(cardId)
+          .update({"archived": false});
+      print("activate");
+    } on FirebaseException catch (e) {
+      if (e.code == "unavailable") {
+        throw "Network error";
+      }
+      if (e.code == "permission-denied") {
+        throw "You are not allowed active this card";
+      }
+      throw "unexpected error occured";
+    } catch (e) {
+      if (kDebugMode) print(e);
+      throw "unexpected error occured";
+    }
+  }
+
   Future<List<Card>> getCards() async {
     final res = await db
         .collection("cards")

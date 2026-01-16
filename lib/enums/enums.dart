@@ -41,4 +41,15 @@ enum Severity {
         return CupertinoColors.destructiveRed;
     }
   }
+
+  IconData get icon {
+    switch (this) {
+      case Severity.normal:
+        return CupertinoIcons.check_mark_circled_solid;
+      case Severity.medium:
+        return CupertinoIcons.exclamationmark_triangle_fill;
+      case Severity.high:
+        return CupertinoIcons.xmark_circle_fill;
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -62,17 +63,27 @@ class CustomCard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                card.bank,
-                style: const TextStyle(
-                  color: CupertinoColors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    card.bank,
+                    style: const TextStyle(
+                      color: CupertinoColors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (card.archived == true) ...[
+                    const SizedBox(height: 4),
+                    Utils.archivedBadge(),
+                  ],
+                ],
               ),
               _buildNetworkLogo(card.network),
             ],
           ),
+
           const SizedBox(height: 16),
           Text(
             card.nickname,

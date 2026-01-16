@@ -87,7 +87,11 @@ class _EditExpenseFormState extends State<EditExpenseForm> {
       }
     } catch (e) {
       if (mounted) {
-        Utils.showError(context, e.toString());
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
       }
     } finally {
       if (mounted) {

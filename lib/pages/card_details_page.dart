@@ -1,10 +1,14 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/extensions.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/models/user.dart';
 import 'package:flutter_application_1/pages/expense_detail_page.dart';
+import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/providers/expense_notifier.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_application_1/services/card_service.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +22,66 @@ class CardDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _CardDetailsPageState extends ConsumerState<CardDetailsPage> {
+  bool loading = false;
+
+  void archiveCard() async {
+    try {
+      setState(() {
+        loading = true;
+      });
+      await CardService.instance.archiveCard(widget.card.docId!);
+      if (mounted) {
+        Utils.showDialog(
+          context: context,
+          message: "Card archived",
+          severity: Severity.normal,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      if (mounted) {
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
+      }
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
+  void activateCard() async {
+    try {
+      setState(() {
+        loading = true;
+      });
+      await CardService.instance.activate(widget.card.docId!);
+      if (mounted) {
+        Utils.showDialog(
+          context: context,
+          message: "Card activated",
+          severity: Severity.normal,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      if (mounted) {
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
+      }
+    } finally {
+      setState(() {
+        loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final expensesAsync = ref.watch(expenseProvider);
@@ -36,6 +100,18 @@ class _CardDetailsPageState extends ConsumerState<CardDetailsPage> {
       symbol: userData?.currency.currencyIcon,
       decimalDigits: 2,
     ).format(widget.card.balance);
+    final cardsAsync = ref.watch(cardsProvider2);
+    List<Card>? cards;
+    cardsAsync.when(
+      data: (data) {
+        setState(() {
+          cards = data;
+        });
+      },
+      loading: () => debugPrint("Loading..."),
+      error: (error, stackTrace) => debugPrint(error.toString()),
+    );
+    final currentCard = cards?.firstWhere((c) => c.docId == widget.card.docId);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(middle: Text("Card details")),
       child: SafeArea(
@@ -61,16 +137,26 @@ class _CardDetailsPageState extends ConsumerState<CardDetailsPage> {
                         ),
                       ],
                     ),
+
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          widget.card.nickname,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              currentCard!.nickname,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            if (currentCard.archived == true) ...[
+                              const SizedBox(width: 8),
+                              Utils.archivedBadge(),
+                            ],
+                          ],
                         ),
+
                         const SizedBox(height: 8),
 
                         Text(
@@ -101,7 +187,7 @@ class _CardDetailsPageState extends ConsumerState<CardDetailsPage> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              "${widget.card.bank} • ${widget.card.type} • ${widget.card.network}",
+                              "${currentCard.bank} • ${currentCard.type} • ${currentCard.network}",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: CupertinoColors.systemGrey,
@@ -118,17 +204,28 @@ class _CardDetailsPageState extends ConsumerState<CardDetailsPage> {
                   children: [
                     Expanded(
                       child: CupertinoButton.filled(
-                        color: CupertinoColors.activeBlue,
-                        child: Text("Edit"),
-                        onPressed: () {},
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: CupertinoButton.filled(
                         color: CupertinoColors.activeOrange,
-                        child: Text("Archive"),
-                        onPressed: () {},
+                        child: loading
+                            ? CupertinoActivityIndicator()
+                            : Text(
+                                currentCard.archived == true
+                                    ? "Activate"
+                                    : "Archive",
+                              ),
+                        onPressed: () {
+                          Utils.showConfirmationDialog(
+                            context,
+                            message: currentCard.archived == true
+                                ? "Are you sure you want to activate this card?"
+                                : "Are you sure you want to archive this card?",
+                            severity: .medium,
+                            action: () {
+                              currentCard.archived == true
+                                  ? activateCard()
+                                  : archiveCard();
+                            },
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -139,7 +236,7 @@ class _CardDetailsPageState extends ConsumerState<CardDetailsPage> {
                 ...expensesAsync.when(
                   data: (expenses) {
                     final cardExpenses = expenses
-                        .where((exp) => exp.cardDocId == widget.card.docId)
+                        .where((exp) => exp.cardDocId == currentCard.docId)
                         .toList();
                     if (cardExpenses.isEmpty) {
                       return const [

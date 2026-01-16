@@ -31,12 +31,12 @@ class _CardFormState extends State<CardForm> {
   late TextEditingController _bankController;
   late TextEditingController _balanceController;
 
-  int _selectedCardNetworkType = 0;
+  int selectedCardNetworkType = 0;
   int _selectedCardType = 0;
   late bool _loading;
 
-  final List<Currencies> _currencies = Currencies.values;
-  int _selectedCurrency = 0;
+  final List<Currencies> currencies = Currencies.values;
+  int selectedCurrency = 0;
 
   @override
   void initState() {
@@ -179,7 +179,11 @@ class _CardFormState extends State<CardForm> {
     } catch (e) {
       if (kDebugMode) print(e);
       if (context.mounted) {
-        Utils.showError(context, e.toString());
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
       }
 
       if (!mounted) return;
@@ -269,7 +273,7 @@ class _CardFormState extends State<CardForm> {
                       ),
                       onSelectedItemChanged: (int selectedType) {
                         setState(() {
-                          _selectedCardNetworkType = selectedType;
+                          selectedCardNetworkType = selectedType;
                           _cardNetWorkTypeController.text =
                               _cardNetworkType[selectedType];
                         });

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/extensions.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/models/expense.dart';
@@ -34,7 +35,11 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
     } catch (e) {
       debugPrint(e.toString());
       if (context.mounted) {
-        Utils.showError(context, e.toString());
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
       }
     } finally {
       setState(() {

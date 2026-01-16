@@ -10,6 +10,7 @@ class Card {
   final DateTime createdAt;
   final double balance;
   final String? docId;
+  final bool? archived;
 
   const Card({
     required this.id,
@@ -21,6 +22,7 @@ class Card {
     required this.bank,
     required this.createdAt,
     this.docId,
+    this.archived,
   });
 
   factory Card.fromMap(Map<String, dynamic>? card, String docId) {
@@ -34,6 +36,7 @@ class Card {
       bank: card?["bank"],
       createdAt: (card?["createdAt"] as Timestamp).toDate(),
       docId: docId,
+      archived: card?["archived"],
     );
   }
 
@@ -48,6 +51,7 @@ class Card {
       "bank": bank,
       "createdAt": createdAt,
       "docId": docId,
+      "archived": archived,
     };
   }
 }

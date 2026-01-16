@@ -28,15 +28,15 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
   final List<TransactionType> _types = TransactionType.values;
   List<Card>? cards;
 
-  int _selectedCategory = 0;
-  int _selectedType = 0;
+  int selectedCategory = 0;
+  int selectedType = 0;
   int _selectedCard = 0;
   bool _loading = false;
 
-  String? _titleError;
+  String? titleError;
   String? _amountError;
   String? _categoryError;
-  String? _typeError;
+  String? typeError;
 
   @override
   void initState() {
@@ -44,7 +44,8 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
     ref.read(cardsProvider2.future).then((fetchedCards) {
       if (mounted) {
         setState(() {
-          cards = fetchedCards;
+          // cards = fetchedCards;
+          cards = fetchedCards.where((card) => card.archived != true).toList();
         });
         if (cards != null && cards!.isNotEmpty) {
           _cardController.text = cards![_selectedCard].bank;
@@ -103,7 +104,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
   bool _validate() {
     bool valid = true;
     if (_titleController.text.isEmpty) {
-      _titleError = "Title cannot be empty";
+      titleError = "Title cannot be empty";
       valid = false;
       return valid;
     }
@@ -121,7 +122,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
     }
 
     if (_typeController.text.isEmpty) {
-      _typeError = "Type must be selected";
+      typeError = "Type must be selected";
       valid = false;
       return valid;
     }
@@ -135,9 +136,11 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
     final isExpense = _typeController.text.toLowerCase() == "expense";
     if (isExpense && amount > selectedCard.balance) {
       if (context.mounted) {
-        Utils.showError(
-          context,
-          "Insufficient balance on this card please fund the card or select another card",
+        Utils.showDialog(
+          context: context,
+          message:
+              "Insufficient balance on this card please fund the card or select another card",
+          severity: Severity.high,
         );
       }
       setState(() {
@@ -175,7 +178,13 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
       setState(() {
         _loading = false;
       });
-      if (context.mounted) Utils.showError(context, e.toString());
+      if (context.mounted) {
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
+      }
     }
   }
 
@@ -228,7 +237,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                         itemExtent: 32,
                         onSelectedItemChanged: (int selectedCategory) {
                           setState(() {
-                            _selectedCategory = selectedCategory;
+                            this.selectedCategory = selectedCategory;
                             _categoriescontroller.text =
                                 _categories[selectedCategory].name;
                           });
@@ -302,7 +311,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                         itemExtent: 32,
                         onSelectedItemChanged: (int selectedType) {
                           setState(() {
-                            _selectedType = selectedType;
+                            this.selectedType = selectedType;
                             _typeController.text = _types[selectedType].name;
                           });
                         },

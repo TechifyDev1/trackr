@@ -22,7 +22,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   final TextEditingController _currencyController = TextEditingController();
 
   final List<Currencies> _currencies = Currencies.values;
-  int _selectedCurrency = 0;
+  int selectedCurrency = 0;
 
   @override
   void dispose() {
@@ -179,7 +179,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                           itemExtent: 32,
                           onSelectedItemChanged: (int selectedCurrency) {
                             setState(() {
-                              _selectedCurrency = selectedCurrency;
+                              this.selectedCurrency = selectedCurrency;
                               _currencyController.text =
                                   _currencies[selectedCurrency].name
                                       .toUpperCase();
