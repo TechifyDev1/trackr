@@ -60,18 +60,17 @@ class CardService {
           .collection("user_cards")
           .doc(cardId)
           .update({"archived": false});
-      print("activate");
     } on FirebaseException catch (e) {
       if (e.code == "unavailable") {
         throw "Network error";
       }
       if (e.code == "permission-denied") {
-        throw "You are not allowed active this card";
+        throw "You are not allowed activate this card";
       }
-      throw "unexpected error occured";
+      throw "An unexpected error occured";
     } catch (e) {
       if (kDebugMode) print(e);
-      throw "unexpected error occured";
+      throw "An unexpected error occured";
     }
   }
 
