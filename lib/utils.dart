@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_application_1/enums/enums.dart';
+import 'package:flutter_application_1/models/expense.dart';
+import 'package:flutter_application_1/models/gemini_response.dart';
+import 'package:http/http.dart' as http;
 
 class Utils {
   static void showDialog({
@@ -109,5 +114,28 @@ class Utils {
         ),
       ),
     );
+  }
+
+  static Future<GeminiResponse> getInsight(Expense expense) async {
+    final url = Uri.parse("http://10.156.167.130:3000/insight");
+
+    try {
+      final res = await http.post(
+        url,
+        body: json.encode({"object": expense.toMap()}),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      print(res);
+      if (res.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(res.body);
+        return GeminiResponse.fromJson(data["res"]);
+      } else {
+        throw {"status": "Error", "message": "Error getting response"};
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      throw "An Unexpected Error orccured";
+    }
   }
 }

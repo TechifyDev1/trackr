@@ -68,7 +68,7 @@ class Expense {
       "id": id,
       "title": title,
       "amount": amount,
-      "date": date,
+      "date": date.toIso8601String(),
       "category": category.name,
       "cardId": cardId,
       "notes": notes,

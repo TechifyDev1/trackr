@@ -9,12 +9,16 @@ class AiButton extends StatefulWidget {
 
 class _AiButtonState extends State<AiButton> {
   bool expanded = false;
+  bool isEmpty = true;
   late FocusNode _focusNode;
+  late TextEditingController reqController;
 
   @override
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+    reqController = TextEditingController();
+    reqController.addListener(_handleTextChange);
     _focusNode.addListener(_handleFocusChange);
   }
 
@@ -26,10 +30,23 @@ class _AiButtonState extends State<AiButton> {
     }
   }
 
+  void _handleTextChange() {
+    if (reqController.text.trim() == "") {
+      setState(() {
+        isEmpty = true;
+      });
+    } else {
+      setState(() {
+        isEmpty = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     _focusNode.dispose();
     _focusNode.removeListener(_handleFocusChange);
+    reqController.dispose();
     super.dispose();
   }
 
@@ -80,12 +97,20 @@ class _AiButtonState extends State<AiButton> {
                       placeholder: "Ask Trackr…",
                       decoration: null,
                       padding: const .all(8),
+                      controller: reqController,
                     ),
                   ),
                   CupertinoButton(
                     padding: EdgeInsets.zero,
                     onPressed: () {},
-                    child: const Icon(CupertinoIcons.keyboard),
+                    child: Icon(
+                      isEmpty
+                          ? CupertinoIcons.keyboard
+                          : CupertinoIcons.arrow_up_circle_fill,
+                      color: isEmpty
+                          ? CupertinoColors.systemGrey
+                          : CupertinoColors.activeBlue,
+                    ),
                   ),
                 ],
               ],

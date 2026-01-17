@@ -71,7 +71,7 @@ class HomePage extends ConsumerWidget {
           children: [
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 100),
+                padding: const EdgeInsets.only(bottom: 20),
                 child: Column(
                   crossAxisAlignment: .start,
                   children: [
