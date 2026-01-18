@@ -26,11 +26,21 @@ class Expense {
   });
 
   factory Expense.fromMap(Map<String, dynamic>? expense) {
+    DateTime parsedDate;
+    var dateValue = expense?["date"];
+
+    if (dateValue is Timestamp) {
+      parsedDate = dateValue.toDate();
+    } else if (dateValue is String) {
+      parsedDate = DateTime.parse(dateValue);
+    } else {
+      parsedDate = DateTime.now();
+    }
     return Expense(
       id: expense?["id"],
       title: expense?["title"],
       amount: expense?["amount"],
-      date: (expense?["date"] as Timestamp).toDate(),
+      date: parsedDate,
       category: ExpenseCategory.values.byName(expense?["category"]),
       cardId: expense?["cardId"],
       notes: expense?["notes"],

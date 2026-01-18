@@ -89,7 +89,8 @@ class ExpenseService {
           return snapshot.docs
               .map((doc) => Expense.fromMap(doc.data()))
               .toList();
-        });
+        })
+        .handleError((e) => {print(e)});
   }
 
   Future<void> updateExpense({required Expense updatedExpense}) async {

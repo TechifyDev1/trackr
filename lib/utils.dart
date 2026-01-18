@@ -43,10 +43,7 @@ class Utils {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text(
-              'Ok',
-              style: TextStyle(color: CupertinoColors.activeBlue),
-            ),
+            child: Text('Ok', style: TextStyle(color: severity.color)),
           ),
         ],
       ),
@@ -126,10 +123,29 @@ class Utils {
         headers: {"Content-Type": "application/json"},
       );
 
-      print(res);
       if (res.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(res.body);
         return GeminiResponse.fromJson(data["res"]);
+      } else {
+        throw {"status": "Error", "message": "Error getting response"};
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      throw "An Unexpected Error orccured";
+    }
+  }
+
+  static Future<GeminiResponse> getResponse(String message) async {
+    final url = Uri.parse("http://10.156.167.130:3000/chat");
+    try {
+      final res = await http.post(
+        url,
+        body: json.encode({"message": message}),
+        headers: {"Content-Type": "application/json"},
+      );
+      if (res.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(res.body);
+        return GeminiResponse.fromJson(data);
       } else {
         throw {"status": "Error", "message": "Error getting response"};
       }

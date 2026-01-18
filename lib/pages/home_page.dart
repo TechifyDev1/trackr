@@ -210,7 +210,7 @@ class HomePage extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 15),
+                    // SizedBox(height: 15),
                     Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
@@ -245,7 +245,7 @@ class HomePage extends ConsumerWidget {
                           ),
                           ...expensesAsync.when(
                             data: (expenses) {
-                              final previewExpenses = expenses.take(4);
+                              final previewExpenses = expenses.take(3);
                               return previewExpenses.map(
                                 (exp) => GestureDetector(
                                   onTap: () {

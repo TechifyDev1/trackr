@@ -65,9 +65,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
       if (context.mounted) {
         Navigator.push(
           context,
-          CupertinoPageRoute(
-            builder: (context) => AiInsightPage(insights: insights),
-          ),
+          CupertinoPageRoute(builder: (_) => AiInsightPage(insights: insights)),
         );
       }
       setState(() {
@@ -76,6 +74,16 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
 
       debugPrint(res.candidates.first.content.parts.first.text);
     } catch (e) {
+      if (context.mounted) {
+        Utils.showDialog(
+          context: context,
+          message: "Error generating insights $e",
+          severity: .high,
+        );
+      }
+      setState(() {
+        isLoadingInsight = false;
+      });
       debugPrint(e.toString());
     } finally {
       setState(() {
