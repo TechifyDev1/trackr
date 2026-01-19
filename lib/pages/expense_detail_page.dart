@@ -60,7 +60,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
     try {
       final res = await Utils.getInsight(widget.expense);
       setState(() {
-        insights = res.candidates.first.content.parts.first.text;
+        insights = res.candidates.first.content.parts.first.text!;
       });
       if (context.mounted) {
         Navigator.push(

@@ -1,4 +1,4 @@
-import 'package:flutter_application_1/models/part.dart';
+import 'package:flutter_application_1/models/insights/part.dart';
 
 class Content {
   final List<Part> parts;

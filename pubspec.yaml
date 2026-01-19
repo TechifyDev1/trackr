@@ -70,6 +70,7 @@ flutter:
   assets:
     - assets/images/qudus.png
     - assets/logo/google_logo.png
+    - assets/logo/trackr.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

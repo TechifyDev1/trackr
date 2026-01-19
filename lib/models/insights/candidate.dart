@@ -1,4 +1,4 @@
-import 'package:flutter_application_1/models/content.dart';
+import 'package:flutter_application_1/models/insights/content.dart';
 
 class Candidate {
   final Content content;

@@ -1,4 +1,4 @@
-import 'package:flutter_application_1/models/candidate.dart';
+import 'package:flutter_application_1/models/insights/candidate.dart';
 
 class GeminiResponse {
   final List<Candidate> candidates;

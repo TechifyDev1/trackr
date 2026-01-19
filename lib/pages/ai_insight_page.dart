@@ -1,11 +1,105 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:flutter_markdown_plus_latex/flutter_markdown_plus_latex.dart';
-import 'package:markdown/markdown.dart' as md;
+import 'package:flutter_application_1/models/chat/history.dart';
+import 'package:flutter_application_1/models/chat/message.dart';
+import 'package:flutter_application_1/models/insights/part.dart';
+import 'package:flutter_application_1/models/ui_message.dart';
+import 'package:flutter_application_1/utils.dart';
+import 'package:flutter_application_1/widgets/molecules/ai_response.dart';
+import 'package:flutter_application_1/widgets/molecules/chat_bubble.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AiInsightPage extends StatelessWidget {
+class AiInsightPage extends ConsumerStatefulWidget {
   final String insights;
   const AiInsightPage({super.key, required this.insights});
+
+  @override
+  ConsumerState<AiInsightPage> createState() => _AiInsightPageState();
+}
+
+class _AiInsightPageState extends ConsumerState<AiInsightPage> {
+  late TextEditingController messageController;
+  List<UiMessage> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    messages.add(UiMessage(message: widget.insights, isUser: false));
+    InsightHistoryState.history = [
+      History(
+        role: "user",
+        parts: [
+          Part(
+            text:
+                "Here is an AI-generated financial insight about my expenses. Please use it as context for our conversation:\n\n${widget.insights}",
+          ),
+        ],
+      ),
+      History(
+        role: "model",
+        parts: [Part(text: widget.insights)],
+      ),
+    ];
+    messageController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    messageController.dispose();
+    super.dispose();
+  }
+
+  void sendMessage() async {
+    final String text = messageController.text.trim();
+    if (text.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      messages.add(UiMessage(message: text, isUser: true));
+      messageController.clear();
+    });
+
+    // 1. Create the user turn
+    final userTurn = History(
+      role: "user",
+      parts: [Part(text: text)],
+    );
+
+    // 2. Prepare the message for the FIRST API call
+    final message = Message(
+      message: text,
+      history: List.from(InsightHistoryState.history),
+    );
+
+    // 3. Add the user turn to global history now so recursive calls have it
+    InsightHistoryState.history.add(userTurn);
+
+    try {
+      final res = await Utils.getResponse(message, ref);
+      setState(() {
+        messages.add(UiMessage(message: res, isUser: false));
+
+        // 4. Add the model's response to global history
+        InsightHistoryState.history.add(
+          History(
+            role: "model",
+            parts: [Part(text: res)],
+          ),
+        );
+      });
+      debugPrint(res);
+    } catch (e) {
+      setState(() {
+        messages.add(
+          UiMessage(
+            message: "Something went wrong. Please try again.",
+            isUser: false,
+          ),
+        );
+      });
+      debugPrint(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,91 +113,15 @@ class AiInsightPage extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  children: [
-                    MarkdownBody(
-                      styleSheet: MarkdownStyleSheet(
-                        p: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                        ),
-
-                        h1: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        h2: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        h3: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        h4: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                        ),
-                        h5: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                        ),
-                        h6: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                        ),
-
-                        strong: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        em: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          fontStyle: FontStyle.italic,
-                        ),
-
-                        listBullet: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                        ),
-                        listIndent: 24,
-
-                        blockquote: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          fontStyle: FontStyle.italic,
-                        ),
-
-                        code: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          fontFamily: 'monospace',
-                        ),
-                        codeblockDecoration: BoxDecoration(
-                          color: CupertinoColors.systemGrey,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-
-                        horizontalRuleDecoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(
-                              color: CupertinoColors.extraLightBackgroundGray,
-                            ),
-                          ),
-                        ),
-
-                        a: TextStyle(
-                          color: CupertinoColors.extraLightBackgroundGray,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                      selectable: true,
-                      data: insights,
-                      builders: {
-                        'latex': LatexElementBuilder(
-                          textStyle: TextStyle(
-                            color: CupertinoColors.extraLightBackgroundGray,
-                          ),
-                        ),
-                      },
-                      extensionSet: md.ExtensionSet(
-                        [LatexBlockSyntax()],
-                        [LatexInlineSyntax()],
-                      ),
-                    ),
-                  ],
+                  crossAxisAlignment: .end,
+                  children: messages.map((m) {
+                    return Padding(
+                      padding: .only(bottom: 12),
+                      child: m.isUser
+                          ? ChatBubble(message: m.message)
+                          : AiResponse(response: m.message),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
@@ -144,6 +162,7 @@ class AiInsightPage extends StatelessWidget {
                           color: const Color.fromARGB(26, 242, 242, 247),
                           borderRadius: BorderRadius.circular(20),
                         ),
+                        controller: messageController,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -153,7 +172,9 @@ class AiInsightPage extends StatelessWidget {
                         CupertinoIcons.arrow_up_circle_fill,
                         size: 32,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        sendMessage();
+                      },
                     ),
                   ],
                 ),
@@ -164,4 +185,8 @@ class AiInsightPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class InsightHistoryState {
+  static List<History> history = [];
 }
