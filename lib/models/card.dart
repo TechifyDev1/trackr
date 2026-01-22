@@ -22,7 +22,7 @@ class Card {
     required this.bank,
     required this.createdAt,
     this.docId,
-    this.archived,
+    this.archived = false,
   });
 
   factory Card.fromMap(Map<String, dynamic>? card, String docId) {
@@ -57,10 +57,7 @@ class Card {
 
   @override
   String toString() {
-    bool isArchived = false;
-    if (archived != null) {
-      isArchived = true;
-    }
-    return "id: $id, nickname: $nickname, type: $type, network: $network, last4card number: $last4, balance: ${balance.toString()}, bank: $bank, createdAt: ${createdAt.toIso8601String()}, docId: $docId, archived: $isArchived.";
+    bool isArchived = archived == true;
+    return "id: $id, nickname: $nickname, type: $type, network: $network, last 4 digit number of the card: $last4, balance: ${balance.toString()}, bank: $bank, createdAt: ${createdAt.toIso8601String()}, docId: $docId, archived: $isArchived.";
   }
 }

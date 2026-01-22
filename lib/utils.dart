@@ -12,6 +12,7 @@ import 'package:flutter_application_1/pages/ai_insight_page.dart';
 import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/providers/expense_notifier.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_application_1/services/expense_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -165,11 +166,11 @@ class Utils {
           final String functionName = call["name"];
           final Map<String, dynamic> args = call["args"] ?? {};
 
-          final res = parseFunctionCall(functionName, args, ref);
+          final res = await parseFunctionCall(functionName, args, ref);
 
           return getResponse(res["message"], res["ref"]);
         } else {
-          final content = data["content"]?.toDetailedString() ?? "";
+          final content = data["content"]?.toString() ?? "";
           if (content.isEmpty) {
             return "I have retrieved the information, but I'm having trouble formatting the response. Your balance is \$balance.";
           }
@@ -196,11 +197,11 @@ class Utils {
     ).format(totalBal);
   }
 
-  static Map<String, dynamic> parseFunctionCall(
+  static Future<Map<String, dynamic>> parseFunctionCall(
     String functionName,
     Map<String, dynamic> args,
     WidgetRef ref,
-  ) {
+  ) async {
     InsightHistoryState.history.add(
       History(
         role: "model",
@@ -296,6 +297,53 @@ class Utils {
           message: "Continue reasoning using the system result above.",
           history: [...InsightHistoryState.history],
         );
+        return {"message": followUp, "ref": ref};
+
+      case "createTransaction":
+        final String title = args["title"];
+        final num rawAmount = args["amount"];
+        final String categoryRaw = args["category"];
+        final String cardId = args["cardId"];
+        final String? cardDocId = args["cardDocId"];
+        final String? notes = args["notes"] ?? "";
+        final String typeRaw = args["type"];
+
+        final expense = Expense(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          title: title,
+          amount: rawAmount.toDouble(),
+          date: DateTime.now(),
+          category: .values.byName(categoryRaw),
+          cardId: cardId,
+          notes: notes ?? "",
+          type: .values.byName(typeRaw),
+          cardDocId: cardDocId,
+        );
+
+        try {
+          await ExpenseService.instance.saveExpense(expense);
+        } catch (e) {
+          throw Exception(
+            "Unable to create expense, ${expense.toDetailedString(ref)}",
+          );
+        }
+        InsightHistoryState.history.add(
+          History(
+            role: "user",
+            parts: [
+              Part(
+                text:
+                    "SYSTEM_RESULT: Transaction created successfully.\n${expense.toDetailedString(ref)}",
+              ),
+            ],
+          ),
+        );
+
+        final followUp = Message(
+          message: "Continue reasoning using the system result above.",
+          history: [...InsightHistoryState.history],
+        );
+
         return {"message": followUp, "ref": ref};
 
       default:
