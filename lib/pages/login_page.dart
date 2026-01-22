@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
         final errData = e as Map<String, dynamic>;
         Utils.showDialog(
           context: context,
-          message: errData["message"].toString(),
+          message: errData["message"].toDetailedString(),
           severity: Severity.high,
         );
       }

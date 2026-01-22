@@ -76,6 +76,9 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
 
     try {
       final res = await Utils.getResponse(message, ref);
+      if (res.trim().isEmpty) {
+        throw "Empty response received";
+      }
       setState(() {
         messages.add(UiMessage(message: res, isUser: false));
 

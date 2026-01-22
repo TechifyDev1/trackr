@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_application_1/enums/enums.dart';
+import 'package:flutter_application_1/utils.dart';
 import 'package:flutter_application_1/widgets/molecules/expenses_list.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Expense {
   final String id;
@@ -85,5 +87,11 @@ class Expense {
       "type": type.name,
       "cardDocId": cardDocId,
     };
+  }
+
+  String toDetailedString(WidgetRef ref) {
+    final Expense currentExp = this;
+    final cardUsed = Utils.getCardUsed(currentExp, ref);
+    return "id: $id, title: $title, amount: ${amount.toString()}, date: $date, category: ${category.name}, cardInfo: ${cardUsed.toString()}, notes: $notes, type: ${type.name}, cardDocId: $cardDocId";
   }
 }

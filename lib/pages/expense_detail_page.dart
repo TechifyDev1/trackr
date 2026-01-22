@@ -60,7 +60,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
     try {
       final res = await Utils.getInsight(widget.expense);
       setState(() {
-        insights = res.candidates.first.content.parts.first.text!;
+        insights = res;
       });
       if (context.mounted) {
         Navigator.push(
@@ -72,7 +72,7 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
         isLoadingInsight = false;
       });
 
-      debugPrint(res.candidates.first.content.parts.first.text);
+      debugPrint(res);
     } catch (e) {
       if (context.mounted) {
         Utils.showDialog(
@@ -86,9 +86,11 @@ class _ExpenseDetailPageState extends ConsumerState<ExpenseDetailPage> {
       });
       debugPrint(e.toString());
     } finally {
-      setState(() {
-        isLoadingInsight = false;
-      });
+      if (mounted) {
+        setState(() {
+          isLoadingInsight = false;
+        });
+      }
     }
   }
 

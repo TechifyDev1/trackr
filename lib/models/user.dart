@@ -14,4 +14,9 @@ class User {
       currency: Currencies.values.byName(data?["currency"]),
     );
   }
+
+  @override
+  String toString() {
+    return "name: $name, email: $email, currency: $currency";
+  }
 }

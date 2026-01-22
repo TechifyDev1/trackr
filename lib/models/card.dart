@@ -54,4 +54,13 @@ class Card {
       "archived": archived,
     };
   }
+
+  @override
+  String toString() {
+    bool isArchived = false;
+    if (archived != null) {
+      isArchived = true;
+    }
+    return "id: $id, nickname: $nickname, type: $type, network: $network, last4card number: $last4, balance: ${balance.toString()}, bank: $bank, createdAt: ${createdAt.toIso8601String()}, docId: $docId, archived: $isArchived.";
+  }
 }
