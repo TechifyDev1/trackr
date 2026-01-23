@@ -346,6 +346,52 @@ class Utils {
 
         return {"message": followUp, "ref": ref};
 
+      case "updateExpense":
+        final String? title = args["title"];
+        final String expenseId = args["expenseId"];
+        final String? notes = args["notes"];
+        final num? rawAmount = args["amount"];
+
+        final expenseListAsync = ref.read(expenseProvider);
+        final expenseList = expenseListAsync.value ?? [];
+        final expenseToUpdate = expenseList.firstWhere(
+          (exp) => exp.id == expenseId,
+        );
+        final updatedExpense = expenseToUpdate.copyWith(
+          title: title,
+          notes: notes,
+          amount: rawAmount?.toDouble(),
+        );
+        // final summery = expenseList.isEmpty
+        //     ? "There is no expense to update"
+        //     : expenseToUpdate.toDetailedString(ref);
+        try {
+          await ExpenseService.instance.updateExpense(
+            updatedExpense: updatedExpense,
+          );
+        } catch (e) {
+          throw Exception(
+            "Unable to update expense, ${expenseToUpdate.toDetailedString(ref)}",
+          );
+        }
+
+        InsightHistoryState.history.add(
+          History(
+            role: "user",
+            parts: [
+              Part(
+                text:
+                    "SYSTEM_RESULT: Transaction updated successfully.\n${updatedExpense.toDetailedString(ref)}",
+              ),
+            ],
+          ),
+        );
+
+        final followUp = Message(
+          message: "Continue reasoning using the system result above.",
+          history: [...InsightHistoryState.history],
+        );
+        return {"message": followUp, "ref": ref};
       default:
         throw Exception("Unknown function called, $functionName");
     }

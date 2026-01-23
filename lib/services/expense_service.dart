@@ -119,18 +119,18 @@ class ExpenseService {
 
         double balance = (card.data()!["balance"] as num).toDouble();
 
-        if (existingExpense.type == TransactionType.deposit) {
+        if (existingExpense.type == .deposit) {
           balance -= existingExpense.amount;
         } else {
           balance += existingExpense.amount;
         }
 
-        if (updatedExpense.type == TransactionType.expense &&
+        if (updatedExpense.type == .expense &&
             balance < updatedExpense.amount) {
           throw "Insufficient balance on this card, fund the card and try again";
         }
 
-        if (updatedExpense.type == TransactionType.deposit) {
+        if (updatedExpense.type == .deposit) {
           balance += updatedExpense.amount;
         } else {
           balance -= updatedExpense.amount;
