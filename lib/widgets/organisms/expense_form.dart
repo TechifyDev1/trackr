@@ -197,7 +197,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
           padding: EdgeInsets.all(16),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: .start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Text("Title", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),

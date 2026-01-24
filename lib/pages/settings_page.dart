@@ -111,7 +111,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             width: double.infinity,
             child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: .start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Container(
                     alignment: .center,

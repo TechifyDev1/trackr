@@ -20,11 +20,12 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
   late TextEditingController messageController;
   late ScrollController scrollController;
   List<UiMessage> messages = [];
+  bool isThinking = false;
 
   @override
   void initState() {
     super.initState();
-    messages.add(UiMessage(message: widget.insights, isUser: false));
+    messages.add(UiMessage.ai(widget.insights));
     InsightHistoryState.history = [
       History(
         role: "user",
@@ -71,8 +72,9 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
     }
 
     setState(() {
-      messages.add(UiMessage(message: text, isUser: true));
+      messages.add(UiMessage.user(text));
       messageController.clear();
+      isThinking = true;
     });
     scrolltoBottom();
 
@@ -92,12 +94,31 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
     InsightHistoryState.history.add(userTurn);
 
     try {
-      final res = await Utils.getResponse(message, ref);
+      final res = await Utils.getResponse(
+        message,
+        ref,
+        onIntent: (intent, {bool isDone = false}) {
+          setState(() {
+            if (isDone) {
+              final index = messages.lastIndexWhere((m) => m.type == MessageType.intent);
+              if (index != -1) {
+                messages[index] = messages[index].copyWith(message: intent);
+              } else {
+                messages.add(UiMessage.intent(intent));
+              }
+            } else {
+              messages.add(UiMessage.intent(intent));
+            }
+          });
+          scrolltoBottom();
+        },
+      );
       if (res.trim().isEmpty) {
         throw "Empty response received";
       }
       setState(() {
-        messages.add(UiMessage(message: res, isUser: false));
+        isThinking = false;
+        messages.add(UiMessage.ai(res));
 
         // 4. Add the model's response to global history
         InsightHistoryState.history.add(
@@ -110,12 +131,8 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
       debugPrint(res);
     } catch (e) {
       setState(() {
-        messages.add(
-          UiMessage(
-            message: "Something went wrong. Please try again.",
-            isUser: false,
-          ),
-        );
+        isThinking = false;
+        messages.add(UiMessage.ai("Something went wrong. Please try again."));
       });
       debugPrint(e.toString());
     } finally {
@@ -132,19 +149,64 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
           children: [
             SingleChildScrollView(
               controller: scrollController,
-              padding: .only(bottom: 60),
+              padding: const EdgeInsets.only(bottom: 60),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  crossAxisAlignment: .end,
-                  children: messages.map((m) {
-                    return Padding(
-                      padding: .only(bottom: 12),
-                      child: m.isUser
-                          ? ChatBubble(message: m.message)
-                          : AiResponse(response: m.message),
-                    );
-                  }).toList(),
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ...messages.map((m) {
+                      if (m.type == MessageType.intent) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Text(
+                            "Trackr is ${m.message}",
+                            style: TextStyle(
+                              color: CupertinoColors.systemGrey,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        );
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: m.isUser
+                            ? Align(
+                                alignment: Alignment.centerRight,
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    maxWidth: MediaQuery.sizeOf(context).width * 0.75,
+                                  ),
+                                  child: ChatBubble(message: m.message),
+                                ),
+                              )
+                            : AiResponse(response: m.message),
+                      );
+                    }),
+                    if (isThinking)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            Image(
+                              image: AssetImage("assets/logo/trackr.png"),
+                              height: 30,
+                              width: 30,
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              "Thinking...",
+                              style: TextStyle(
+                                color: CupertinoColors.systemGrey,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -191,13 +253,17 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
                     const SizedBox(width: 8),
                     CupertinoButton(
                       padding: EdgeInsets.zero,
-                      child: const Icon(
-                        CupertinoIcons.arrow_up_circle_fill,
-                        size: 32,
-                      ),
-                      onPressed: () {
-                        sendMessage();
-                      },
+                      onPressed: isThinking
+                          ? null
+                          : () {
+                              sendMessage();
+                            },
+                      child: isThinking
+                          ? const CupertinoActivityIndicator()
+                          : const Icon(
+                              CupertinoIcons.arrow_up_circle_fill,
+                              size: 32,
+                            ),
                     ),
                   ],
                 ),

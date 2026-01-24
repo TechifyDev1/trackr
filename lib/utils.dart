@@ -147,7 +147,11 @@ class Utils {
     }
   }
 
-  static Future<String> getResponse(Message message, WidgetRef ref) async {
+  static Future<String> getResponse(
+    Message message,
+    WidgetRef ref, {
+    void Function(String, {bool isDone})? onIntent,
+  }) async {
     final url = Uri.parse("http://10.62.167.130:3000/chat");
     try {
       final res = await http.post(
@@ -167,9 +171,13 @@ class Utils {
           final String functionName = call["name"];
           final Map<String, dynamic> args = call["args"] ?? {};
 
-          final res = await parseFunctionCall(functionName, args, ref);
-
-          return getResponse(res["message"], res["ref"]);
+          final res = await parseFunctionCall(
+            functionName,
+            args,
+            ref,
+            onIntent: onIntent,
+          );
+          return getResponse(res["message"], res["ref"], onIntent: onIntent);
         } else {
           final content = data["content"]?.toString() ?? "";
           if (content.isEmpty) {
@@ -201,8 +209,9 @@ class Utils {
   static Future<Map<String, dynamic>> parseFunctionCall(
     String functionName,
     Map<String, dynamic> args,
-    WidgetRef ref,
-  ) async {
+    WidgetRef ref, {
+    void Function(String, {bool isDone})? onIntent,
+  }) async {
     InsightHistoryState.history.add(
       History(
         role: "model",
@@ -213,7 +222,9 @@ class Utils {
     );
     switch (functionName) {
       case "getBalance":
+        onIntent?.call("checking your balance...", isDone: false);
         final String balance = getBalance(ref);
+        onIntent?.call("checked your balance", isDone: true);
         InsightHistoryState.history.add(
           History(
             role: "user",
@@ -227,8 +238,10 @@ class Utils {
         );
         break;
       case "getTransactions":
+        onIntent?.call("fetching your transactions...", isDone: false);
         final expAsync = ref.read(expenseProvider);
         final expenses = expAsync.value ?? [];
+        onIntent?.call("fetched your transactions", isDone: true);
         final summary = expenses.isEmpty
             ? "No transactions found."
             : expenses.map((e) => e.toDetailedString(ref)).join("\n");
@@ -246,8 +259,10 @@ class Utils {
         break;
 
       case "getUserDetails":
+        onIntent?.call("retrieving user details...", isDone: false);
         final userAsync = ref.read(userProvider2);
         final User? user = userAsync.value;
+        onIntent?.call("retrieved user details", isDone: true);
         final summery = user == null
             ? "No user infomation provided"
             : user.toString();
@@ -265,8 +280,10 @@ class Utils {
         break;
 
       case "getCards":
+        onIntent?.call("retrieving your cards...", isDone: false);
         final cardAsync = ref.read(cardsProvider2);
         final cards = cardAsync.value ?? [];
+        onIntent?.call("retrieved your cards", isDone: true);
         final summery = cards.isEmpty
             ? "No cards found"
             : cards.map((e) => e.toString()).join("\n");
@@ -285,6 +302,7 @@ class Utils {
         break;
 
       case "createTransaction":
+        onIntent?.call("creating a new transaction...", isDone: false);
         final String title = args["title"];
         final num rawAmount = args["amount"];
         final String categoryRaw = args["category"];
@@ -312,6 +330,7 @@ class Utils {
             "Unable to create expense, ${expense.toDetailedString(ref)}",
           );
         }
+        onIntent?.call("created a new transaction", isDone: true);
         InsightHistoryState.history.add(
           History(
             role: "user",
@@ -327,6 +346,7 @@ class Utils {
         break;
 
       case "updateExpense":
+        onIntent?.call("updating transaction details...", isDone: false);
         final String? title = args["title"];
         final String expenseId = args["expenseId"];
         final String? notes = args["notes"];
@@ -354,6 +374,7 @@ class Utils {
             "Unable to update expense, ${expenseToUpdate.toDetailedString(ref)}",
           );
         }
+        onIntent?.call("updated transaction details", isDone: true);
 
         InsightHistoryState.history.add(
           History(
@@ -369,12 +390,14 @@ class Utils {
         break;
 
       case "archiveCard":
+        onIntent?.call("archiving your card...", isDone: false);
         final String cardDocId = args["cardDocId"];
         try {
           await CardService.instance.archiveCard(cardDocId);
         } catch (e) {
           throw Exception(e);
         }
+        onIntent?.call("archived your card", isDone: true);
         InsightHistoryState.history.add(
           History(
             role: "user",
@@ -388,12 +411,14 @@ class Utils {
         );
         break;
       case "activateCard":
+        onIntent?.call("activating your card...", isDone: false);
         final String cardDocId = args["cardDocId"];
         try {
           await CardService.instance.activate(cardDocId);
         } catch (e) {
           throw Exception(e);
         }
+        onIntent?.call("activated your card", isDone: true);
         InsightHistoryState.history.add(
           History(
             role: "user",
@@ -408,6 +433,7 @@ class Utils {
 
         break;
       case "createCard":
+        onIntent?.call("creating a new card...", isDone: false);
         final Card newCard = Card(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           nickname: args["nickname"],
@@ -424,6 +450,7 @@ class Utils {
         } catch (e) {
           throw Exception(e);
         }
+        onIntent?.call("created a new card", isDone: true);
         InsightHistoryState.history.add(
           History(
             role: "user",

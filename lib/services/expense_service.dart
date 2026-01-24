@@ -90,7 +90,7 @@ class ExpenseService {
               .map((doc) => Expense.fromMap(doc.data()))
               .toList();
         })
-        .handleError((e) => {print(e)});
+        .handleError((e) => {debugPrint(e)});
   }
 
   Future<void> updateExpense({required Expense updatedExpense}) async {

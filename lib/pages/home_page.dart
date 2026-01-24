@@ -151,22 +151,21 @@ class HomePage extends ConsumerWidget {
                         mainAxisAlignment: .spaceBetween,
                         children: [
                           Expanded(
-                            child: ElevatedButton(
+                            child: CupertinoButton(
+                              color: CupertinoColors.white,
+                              padding: EdgeInsets.zero,
                               onPressed: () {
                                 Utils.showPagePopup(context, ExpenseForm());
                               },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: .circular(12),
-                                ),
-                              ),
+                              borderRadius: BorderRadius.circular(12),
                               child: Row(
-                                mainAxisAlignment: .center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     "Pay",
                                     style: TextStyle(
                                       color: CupertinoColors.darkBackgroundGray,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   SizedBox(width: 5),
@@ -180,22 +179,21 @@ class HomePage extends ConsumerWidget {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
-                            child: ElevatedButton(
+                            child: CupertinoButton(
+                              color: CupertinoColors.white,
+                              padding: EdgeInsets.zero,
                               onPressed: () {
                                 Utils.showPagePopup(context, ExpenseForm());
                               },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: .circular(12),
-                                ),
-                              ),
+                              borderRadius: BorderRadius.circular(12),
                               child: Row(
-                                mainAxisAlignment: .center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     "Deposit",
                                     style: TextStyle(
                                       color: CupertinoColors.darkBackgroundGray,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   SizedBox(width: 5),

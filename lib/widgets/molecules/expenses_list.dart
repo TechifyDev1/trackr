@@ -49,8 +49,16 @@ class ExpensesList extends StatelessWidget {
               size: 28,
               color: CupertinoColors.extraLightBackgroundGray,
             ),
-            title: Text(title),
-            subtitle: Text(subtitle),
+            title: Text(
+              title,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            subtitle: Text(
+              subtitle,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
             trailing: Text(
               transactionType.formatAmount(price.toString()),
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
