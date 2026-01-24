@@ -18,6 +18,7 @@ class AiInsightPage extends ConsumerStatefulWidget {
 
 class _AiInsightPageState extends ConsumerState<AiInsightPage> {
   late TextEditingController messageController;
+  late ScrollController scrollController;
   List<UiMessage> messages = [];
 
   @override
@@ -40,12 +41,27 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
       ),
     ];
     messageController = TextEditingController();
+    scrollController = ScrollController();
+    scrolltoBottom();
   }
 
   @override
   void dispose() {
     messageController.dispose();
+    scrollController.dispose();
     super.dispose();
+  }
+
+  void scrolltoBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!scrollController.hasClients) return;
+
+      scrollController.animateTo(
+        scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   void sendMessage() async {
@@ -58,6 +74,7 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
       messages.add(UiMessage(message: text, isUser: true));
       messageController.clear();
     });
+    scrolltoBottom();
 
     // 1. Create the user turn
     final userTurn = History(
@@ -101,6 +118,8 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
         );
       });
       debugPrint(e.toString());
+    } finally {
+      scrolltoBottom();
     }
   }
 
@@ -112,6 +131,7 @@ class _AiInsightPageState extends ConsumerState<AiInsightPage> {
         child: Stack(
           children: [
             SingleChildScrollView(
+              controller: scrollController,
               padding: .only(bottom: 60),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

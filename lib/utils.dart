@@ -12,6 +12,7 @@ import 'package:flutter_application_1/pages/ai_insight_page.dart';
 import 'package:flutter_application_1/providers/card_notifier.dart';
 import 'package:flutter_application_1/providers/expense_notifier.dart';
 import 'package:flutter_application_1/providers/user_notifier.dart';
+import 'package:flutter_application_1/services/card_service.dart';
 import 'package:flutter_application_1/services/expense_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -224,18 +225,13 @@ class Utils {
             ],
           ),
         );
-        final Message followUp = Message(
-          message: "Continue reasoning using the system result above.",
-          history: [...InsightHistoryState.history],
-        );
-        return {"message": followUp, "ref": ref};
-
+        break;
       case "getTransactions":
         final expAsync = ref.read(expenseProvider);
         final expenses = expAsync.value ?? [];
         final summary = expenses.isEmpty
             ? "No transactions found."
-            : expenses.map((e) => e.toDetailedString(ref));
+            : expenses.map((e) => e.toDetailedString(ref)).join("\n");
         InsightHistoryState.history.add(
           History(
             role: "user",
@@ -247,11 +243,7 @@ class Utils {
             ],
           ),
         );
-        final Message followUp = Message(
-          message: "Continue reasoning using the system result above.",
-          history: [...InsightHistoryState.history],
-        );
-        return {"message": followUp, "ref": ref};
+        break;
 
       case "getUserDetails":
         final userAsync = ref.read(userProvider2);
@@ -270,18 +262,14 @@ class Utils {
             ],
           ),
         );
-        final followUp = Message(
-          message: "Continue reasoning using the system result above.",
-          history: [...InsightHistoryState.history],
-        );
-        return {"message": followUp, "ref": ref};
+        break;
 
       case "getCards":
         final cardAsync = ref.read(cardsProvider2);
         final cards = cardAsync.value ?? [];
         final summery = cards.isEmpty
             ? "No cards found"
-            : cards.map((e) => e.toString());
+            : cards.map((e) => e.toString()).join("\n");
         InsightHistoryState.history.add(
           History(
             role: "user",
@@ -293,11 +281,8 @@ class Utils {
             ],
           ),
         );
-        final followUp = Message(
-          message: "Continue reasoning using the system result above.",
-          history: [...InsightHistoryState.history],
-        );
-        return {"message": followUp, "ref": ref};
+
+        break;
 
       case "createTransaction":
         final String title = args["title"];
@@ -339,12 +324,7 @@ class Utils {
           ),
         );
 
-        final followUp = Message(
-          message: "Continue reasoning using the system result above.",
-          history: [...InsightHistoryState.history],
-        );
-
-        return {"message": followUp, "ref": ref};
+        break;
 
       case "updateExpense":
         final String? title = args["title"];
@@ -386,15 +366,84 @@ class Utils {
             ],
           ),
         );
+        break;
 
-        final followUp = Message(
-          message: "Continue reasoning using the system result above.",
-          history: [...InsightHistoryState.history],
+      case "archiveCard":
+        final String cardDocId = args["cardDocId"];
+        try {
+          await CardService.instance.archiveCard(cardDocId);
+        } catch (e) {
+          throw Exception(e);
+        }
+        InsightHistoryState.history.add(
+          History(
+            role: "user",
+            parts: [
+              Part(
+                text:
+                    "SYSTEM_RESULT: Card with id $cardDocId archived successfully.",
+              ),
+            ],
+          ),
         );
-        return {"message": followUp, "ref": ref};
+        break;
+      case "activateCard":
+        final String cardDocId = args["cardDocId"];
+        try {
+          await CardService.instance.activate(cardDocId);
+        } catch (e) {
+          throw Exception(e);
+        }
+        InsightHistoryState.history.add(
+          History(
+            role: "user",
+            parts: [
+              Part(
+                text:
+                    "SYSTEM_RESULT: Card with id $cardDocId activated successfully.",
+              ),
+            ],
+          ),
+        );
+
+        break;
+      case "createCard":
+        final Card newCard = Card(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          nickname: args["nickname"],
+          type: args["cardType"],
+          network: args["cardNetworkType"],
+          last4: args["last4Digit"],
+          balance: (args["balance"] as num).toDouble(),
+          bank: args["bank"],
+          createdAt: DateTime.now(),
+        );
+
+        try {
+          await CardService.instance.saveCard(newCard);
+        } catch (e) {
+          throw Exception(e);
+        }
+        InsightHistoryState.history.add(
+          History(
+            role: "user",
+            parts: [
+              Part(
+                text: "SYSTEM_RESULT: Card card created with id ${newCard.id}",
+              ),
+            ],
+          ),
+        );
+        break;
+
       default:
         throw Exception("Unknown function called, $functionName");
     }
+    final followUp = Message(
+      message: "Continue reasoning using the system result above.",
+      history: [...InsightHistoryState.history],
+    );
+    return {"message": followUp, "ref": ref};
   }
 
   static Card getCardUsed(Expense expense, WidgetRef ref) {
