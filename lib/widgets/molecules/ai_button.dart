@@ -128,73 +128,78 @@ class _AiButtonState extends ConsumerState<AiButton> {
       bottom: fromBottom,
       left: 0,
       right: 0,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: GestureDetector(
-          onTap: () {
-            if (!expanded) {
-              setState(() {
-                expanded = true;
-              });
-              _focusNode.requestFocus();
-            }
-          },
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            height: height,
-            width: expanded ? expandedWidth : initialWidth,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 36, 36, 36),
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromARGB(48, 0, 0, 0),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                if (!expanded) ...[
-                  const Icon(
-                    CupertinoIcons.lightbulb,
-                    color: CupertinoColors.activeOrange,
-                  ),
-                  const SizedBox(width: 8),
-                  const Expanded(
-                    child: Text("Ask Trackr", overflow: TextOverflow.ellipsis),
-                  ),
-                ] else ...[
-                  Expanded(
-                    child: CupertinoTextField(
-                      focusNode: _focusNode,
-                      autofocus: true,
-                      placeholder: "Ask Trackr…",
-                      decoration: null,
-                      padding: const EdgeInsets.all(8),
-                      controller: reqController,
-                      readOnly: isLoading,
-                      style: const TextStyle(color: CupertinoColors.white),
-                    ),
-                  ),
-                  CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: isLoading ? null : sendMessage,
-                    child: isLoading
-                        ? const CupertinoActivityIndicator()
-                        : Icon(
-                            isEmpty
-                                ? CupertinoIcons.keyboard
-                                : CupertinoIcons.arrow_up_circle_fill,
-                            color: isEmpty
-                                ? CupertinoColors.systemGrey
-                                : CupertinoColors.activeBlue,
-                          ),
+      child: SafeArea(
+        bottom: true,
+        top: false,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: GestureDetector(
+            onTap: () {
+              if (!expanded) {
+                setState(() {
+                  expanded = true;
+                });
+                _focusNode.requestFocus();
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              height: height,
+              width: expanded ? expandedWidth : initialWidth,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 36, 36, 36),
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color.fromARGB(48, 0, 0, 0),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
-              ],
+              ),
+              child: Row(
+                children: [
+                  if (!expanded) ...[
+                    const Icon(
+                      CupertinoIcons.lightbulb,
+                      color: CupertinoColors.activeOrange,
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child:
+                          Text("Ask Trackr", overflow: TextOverflow.ellipsis),
+                    ),
+                  ] else ...[
+                    Expanded(
+                      child: CupertinoTextField(
+                        focusNode: _focusNode,
+                        autofocus: true,
+                        placeholder: "Ask Trackr…",
+                        decoration: null,
+                        padding: const EdgeInsets.all(8),
+                        controller: reqController,
+                        readOnly: isLoading,
+                        style: const TextStyle(color: CupertinoColors.white),
+                      ),
+                    ),
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: isLoading ? null : sendMessage,
+                      child: isLoading
+                          ? const CupertinoActivityIndicator()
+                          : Icon(
+                              isEmpty
+                                  ? CupertinoIcons.keyboard
+                                  : CupertinoIcons.arrow_up_circle_fill,
+                              color: isEmpty
+                                  ? CupertinoColors.systemGrey
+                                  : CupertinoColors.activeBlue,
+                            ),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ),
         ),

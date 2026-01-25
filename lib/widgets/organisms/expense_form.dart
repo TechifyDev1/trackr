@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart' show FilteringTextInputFormatter;
 import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/models/expense.dart';
@@ -205,6 +206,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                   controller: _titleController,
                   placeholder: "Title",
                   prefixIcon: CupertinoIcons.pencil,
+                  disabled: _loading,
                 ),
                 const SizedBox(height: 15),
 
@@ -216,6 +218,8 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                   prefixIcon: CupertinoIcons.money_dollar,
                   inputType: TextInputType.numberWithOptions(),
                   errorText: _amountError,
+                  disabled: _loading,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 const SizedBox(height: 15),
 
@@ -254,7 +258,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                     absorbing: true,
                     child: CustomTextInput(
                       controller: _categoriescontroller,
-                      placeholder: "Currency click to choose",
+                      placeholder: "Categories (click to choose)",
                       prefixIcon: CupertinoIcons.square_grid_2x2,
                       disabled: true,
                       errorText: _categoryError,
@@ -299,6 +303,7 @@ class _ExpenseFormState extends ConsumerState<ExpenseForm> {
                   controller: _notesController,
                   placeholder: "Notes",
                   prefixIcon: CupertinoIcons.book,
+                  disabled: _loading,
                 ),
                 const SizedBox(height: 15),
 

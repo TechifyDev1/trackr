@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_1/enums/enums.dart';
 import 'package:flutter_application_1/models/card.dart';
 import 'package:flutter_application_1/services/card_service.dart';
@@ -213,6 +214,7 @@ class _CardFormState extends State<CardForm> {
                   onChanged: (value) {
                     if (_nicknameError != null) _nicknameError = null;
                   },
+                  disabled: _loading,
                 ),
                 const SizedBox(height: 15),
                 const Text("Type", style: TextStyle(fontSize: 14)),
@@ -312,6 +314,7 @@ class _CardFormState extends State<CardForm> {
                   inputType: TextInputType.number,
                   prefixIcon: CupertinoIcons.asterisk_circle,
                   errorText: _lastNumsError,
+                  maxLength: 4,
                   onChanged: (value) {
                     setState(() {
                       if (_lastNumsError != null) {
@@ -319,12 +322,17 @@ class _CardFormState extends State<CardForm> {
                       }
                     });
                   },
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(4),
+                  ],
                 ),
                 const SizedBox(height: 15),
 
                 const Text("Bank", style: TextStyle(fontSize: 14)),
                 const SizedBox(height: 5),
                 CustomTextInput(
+                  disabled: _loading,
                   controller: _bankController,
                   placeholder: "Bank Name",
                   prefixIcon: CupertinoIcons.house_alt,
@@ -351,6 +359,7 @@ class _CardFormState extends State<CardForm> {
                       if (_balanceError != null) _balanceError = null;
                     });
                   },
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 const SizedBox(height: 15),
 

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart' show TextInputFormatter;
 
 class CustomTextInput extends StatefulWidget {
   final TextEditingController controller;
@@ -8,6 +9,8 @@ class CustomTextInput extends StatefulWidget {
   final String? errorText;
   final bool disabled;
   final TextInputType inputType;
+  final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters;
   final void Function(String)? onChanged;
   const CustomTextInput({
     super.key,
@@ -19,6 +22,8 @@ class CustomTextInput extends StatefulWidget {
     this.onChanged,
     this.disabled = false,
     this.inputType = TextInputType.text,
+    this.maxLength,
+    this.inputFormatters,
   });
 
   @override
@@ -32,10 +37,11 @@ class _CustomTextInputState extends State<CustomTextInput> {
       crossAxisAlignment: .start,
       children: [
         CupertinoTextField(
+          inputFormatters: widget.inputFormatters,
           keyboardType: widget.inputType,
           readOnly: widget.disabled,
           obscureText: widget.isPassWordInput,
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           controller: widget.controller,
           placeholder: widget.placeholder,
           prefix: Padding(
@@ -47,7 +53,7 @@ class _CustomTextInputState extends State<CustomTextInput> {
             color: CupertinoColors.darkBackgroundGray,
             borderRadius: BorderRadius.circular(10),
           ),
-          style: TextStyle(color: CupertinoColors.white),
+          style: const TextStyle(color: CupertinoColors.white),
           onChanged: widget.onChanged,
         ),
         if (widget.errorText != null)

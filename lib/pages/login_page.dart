@@ -87,6 +87,38 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void signUpWithGoogle(BuildContext context) async {
+    if (_loading) return;
+    setState(() => _loading = true);
+
+    try {
+      final res = await AuthService.instance.signUpWithGoogle();
+      if (res["status"] == "error") {
+        if (context.mounted) {
+          Utils.showDialog(
+            context: context,
+            message: res["message"] ?? "Google sign-in failed",
+            severity: Severity.high,
+          );
+        }
+      }
+      if (kDebugMode) print("Success Google login $res");
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (context.mounted) {
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -195,7 +227,9 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     child: CupertinoButton(
                       color: CupertinoColors.darkBackgroundGray,
-                      onPressed: () {},
+                      onPressed: () {
+                        signUpWithGoogle(context);
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

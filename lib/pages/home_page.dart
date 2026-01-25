@@ -18,276 +18,281 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
-    final cardAsync = ref.watch(cardsProvider2);
-    final totalBalAsync = cardAsync.whenData(
-      (cards) => cards.fold(0.0, (sum, card) => sum + card.balance),
-    );
-    final totalBal = totalBalAsync.value ?? 0.0;
-    final currencyIcon = user?.currency.currencyIcon ?? "₦";
-    final expensesAsync = ref.watch(expenseProvider);
-
-    final formattedAmount = NumberFormat.currency(
-      symbol: currencyIcon,
-      decimalDigits: 2,
-    ).format(totalBal);
-
-    // if (kDebugMode) {
-    //   print(user);
-    // }
-    return CupertinoPageScaffold(
-      backgroundColor: CupertinoColors.darkBackgroundGray,
-      navigationBar: CupertinoNavigationBar(
-        leading: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: AssetImage("assets/images/qudus.png"),
-            ),
-            SizedBox(width: 10),
-            Text(user?.name ?? "--:--"),
-          ],
-        ),
-        trailing: IconButton(
-          onPressed: () {
-            tabController.index = 3;
-          },
-          icon: Icon(
-            CupertinoIcons.settings,
-            color: CupertinoColors.white,
-            size: 20,
-          ),
-          style: IconButton.styleFrom(
-            backgroundColor: CupertinoColors.darkBackgroundGray,
-          ),
-          iconSize: 16,
-        ),
+    final userAsync = ref.watch(userProvider2);
+    return userAsync.when(
+      loading: () => const CupertinoPageScaffold(
+        backgroundColor: CupertinoColors.darkBackgroundGray,
+        child: Center(child: CupertinoActivityIndicator()),
       ),
-      child: GestureDetector(
-        behavior: .translucent,
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Stack(
-          children: [
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Column(
-                  crossAxisAlignment: .start,
-                  children: [
-                    SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
+      error: (err, stack) => CupertinoPageScaffold(
+        backgroundColor: CupertinoColors.darkBackgroundGray,
+        child: Center(child: Text("Error: $err", textAlign: .center)),
+      ),
+      data: (userData) {
+        final cardAsync = ref.watch(cardsProvider2);
+        final totalBalAsync = cardAsync.whenData(
+          (cards) => cards.fold(0.0, (sum, card) => sum + card.balance),
+        );
+        final totalBal = totalBalAsync.value ?? 0.0;
+        final currencyIcon = userData.currency.currencyIcon;
+        final expensesAsync = ref.watch(expenseProvider);
+
+        final formattedAmount = NumberFormat.currency(
+          symbol: currencyIcon,
+          decimalDigits: 2,
+        ).format(totalBal);
+
+        return CupertinoPageScaffold(
+          backgroundColor: CupertinoColors.darkBackgroundGray,
+          navigationBar: CupertinoNavigationBar(
+            leading: Row(
+              children: [
+                CircleAvatar(
+                  backgroundImage:
+                      userData.photoUrl != null && userData.photoUrl!.isNotEmpty
+                      ? NetworkImage(userData.photoUrl!)
+                      : const AssetImage("assets/images/9723582.jpg"),
+                ),
+                const SizedBox(width: 10),
+                Text(userData.name),
+              ],
+            ),
+            trailing: IconButton(
+              onPressed: () {
+                tabController.index = 3;
+              },
+              icon: const Icon(
+                CupertinoIcons.settings,
+                color: CupertinoColors.white,
+                size: 20,
+              ),
+              style: IconButton.styleFrom(
+                backgroundColor: CupertinoColors.darkBackgroundGray,
+              ),
+              iconSize: 16,
+            ),
+          ),
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: SizedBox.expand(
+              child: Stack(
+                children: [
+                  SafeArea(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(bottom: 20),
                       child: Column(
-                        crossAxisAlignment: .start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Available on Card",
-                            style: TextStyle(
-                              color: Color.fromARGB(255, 197, 197, 197),
-                              fontSize: 14,
+                          const SizedBox(height: 15),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Available on Card",
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 197, 197, 197),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  formattedAmount,
+                                  style: const TextStyle(
+                                    color: CupertinoColors.white,
+                                    fontSize: 28,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(height: 5),
-                          Text(
-                            formattedAmount,
-                            style: TextStyle(
-                              color: CupertinoColors.white,
-                              fontSize: 28,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(16.0),
-                    //   child: Column(
-                    //     crossAxisAlignment: .start,
-                    //     children: [
-                    //       Row(
-                    //         mainAxisAlignment: .spaceBetween,
-                    //         children: [
-                    //           const Text(
-                    //             "Transfer Limit",
-                    //             style: TextStyle(fontWeight: .w500),
-                    //           ),
-                    //           // SizedBox(width: 10),
-                    //           const Text(
-                    //             "\$12,000",
-                    //             style: TextStyle(fontWeight: .w500),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //       const SizedBox(height: 5),
-                    //       Row(
-                    //         children: [
-                    //           SizedBox(
-                    //             height: 2,
-                    //             width: MediaQuery.of(context).size.width * 0.3,
-                    //             child: Container(color: CupertinoColors.white),
-                    //           ),
-                    //           SizedBox(
-                    //             height: 2,
-                    //             width: MediaQuery.of(context).size.width * 0.6,
-                    //             child: Container(color: Colors.white30),
-                    //           ),
-                    //         ],
-                    //       ),
-                    //       const SizedBox(height: 5),
-                    //       const Text(
-                    //         "Spent \$1,244.65",
-                    //         style: TextStyle(
-                    //           fontSize: 14,
-                    //           color: Color.fromARGB(255, 197, 197, 197),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: .spaceBetween,
-                        children: [
-                          Expanded(
-                            child: CupertinoButton(
-                              color: CupertinoColors.white,
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                Utils.showPagePopup(context, ExpenseForm());
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Pay",
-                                    style: TextStyle(
-                                      color: CupertinoColors.darkBackgroundGray,
-                                      fontWeight: FontWeight.bold,
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: CupertinoButton(
+                                    color: CupertinoColors.white,
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      Utils.showPagePopup(
+                                        context,
+                                        const ExpenseForm(),
+                                      );
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Pay",
+                                          style: TextStyle(
+                                            color: CupertinoColors
+                                                .darkBackgroundGray,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: 5),
+                                        Icon(
+                                          CupertinoIcons
+                                              .money_dollar_circle_fill,
+                                          color: CupertinoColors
+                                              .darkBackgroundGray,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(width: 5),
-                                  Icon(
-                                    CupertinoIcons.money_dollar_circle_fill,
-                                    color: CupertinoColors.darkBackgroundGray,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: CupertinoButton(
-                              color: CupertinoColors.white,
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                Utils.showPagePopup(context, ExpenseForm());
-                              },
-                              borderRadius: BorderRadius.circular(12),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Deposit",
-                                    style: TextStyle(
-                                      color: CupertinoColors.darkBackgroundGray,
-                                      fontWeight: FontWeight.bold,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: CupertinoButton(
+                                    color: CupertinoColors.white,
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      Utils.showPagePopup(
+                                        context,
+                                        const ExpenseForm(),
+                                      );
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Deposit",
+                                          style: TextStyle(
+                                            color: CupertinoColors
+                                                .darkBackgroundGray,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: 5),
+                                        Icon(
+                                          CupertinoIcons.plus_circle_fill,
+                                          color: CupertinoColors
+                                              .darkBackgroundGray,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  SizedBox(width: 5),
-                                  Icon(
-                                    CupertinoIcons.plus_circle_fill,
-                                    color: CupertinoColors.darkBackgroundGray,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: CupertinoColors.darkBackgroundGray,
+                            ),
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      color: const Color.fromARGB(
+                                        255,
+                                        131,
+                                        128,
+                                        128,
+                                      ),
+                                    ),
+                                    child: const SizedBox(height: 5, width: 25),
                                   ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // SizedBox(height: 15),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: CupertinoColors.darkBackgroundGray,
-                      ),
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: .start,
-                        children: [
-                          Align(
-                            alignment: .center,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: const Color.fromARGB(255, 131, 128, 128),
-                              ),
-                              child: SizedBox(height: 5, width: 25),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: .spaceBetween,
-                            children: [
-                              const Text("Operations"),
-                              TextButton(
-                                onPressed: () {
-                                  tabController.index = 1;
-                                },
-                                child: const Text("View all"),
-                              ),
-                            ],
-                          ),
-                          ...expensesAsync.when(
-                            data: (expenses) {
-                              final previewExpenses = expenses.take(3);
-                              return previewExpenses.map(
-                                (exp) => GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                        builder: (context) =>
-                                            ExpenseDetailPage(expense: exp),
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text("Operations"),
+                                    TextButton(
+                                      onPressed: () {
+                                        tabController.index = 1;
+                                      },
+                                      child: const Text("View all"),
+                                    ),
+                                  ],
+                                ),
+                                ...expensesAsync.when(
+                                  data: (expenses) {
+                                    if (expenses.isEmpty) {
+                                      return [
+                                        const Padding(
+                                          padding: EdgeInsets.only(top: 16),
+                                          child: Center(
+                                            child: Text(
+                                              "You have no recent Transaction",
+                                            ),
+                                          ),
+                                        ),
+                                      ];
+                                    }
+                                    final previewExpenses = expenses.take(3);
+                                    return previewExpenses.map(
+                                      (exp) => GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  ExpenseDetailPage(
+                                                    expense: exp,
+                                                  ),
+                                            ),
+                                          );
+                                        },
+                                        child: ExpensesList(
+                                          title: exp.title,
+                                          subtitle: exp.category.name
+                                              .capitalize(),
+                                          price: exp.amount,
+                                          transactionType: exp.type,
+                                        ),
                                       ),
                                     );
                                   },
-                                  child: ExpensesList(
-                                    title: exp.title,
-                                    subtitle: exp.category.name.capitalize(),
-                                    price: exp.amount,
-                                    transactionType: exp.type,
-                                  ),
+                                  error: (e, er) {
+                                    debugPrint(e.toString());
+                                    debugPrint(er.toString());
+                                    return [
+                                      const Center(
+                                        child: Text(
+                                          "Error loading your expenses",
+                                        ),
+                                      ),
+                                    ];
+                                  },
+                                  loading: () => [
+                                    const Center(
+                                      child: CupertinoActivityIndicator(),
+                                    ),
+                                  ],
                                 ),
-                              );
-                            },
-                            error: (e, er) {
-                              debugPrint(e.toString());
-                              debugPrint(er.toString());
-                              return [
-                                Center(
-                                  child: Text("Error loading your expenses"),
-                                ),
-                              ];
-                            },
-                            loading: () => [
-                              Center(child: CupertinoActivityIndicator()),
-                            ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const AiButton(),
+                ],
               ),
             ),
-            AiButton(),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

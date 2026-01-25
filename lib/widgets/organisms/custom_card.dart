@@ -30,11 +30,12 @@ class CustomCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(userProvider);
+    final userAsync = ref.watch(userProvider2);
+    final user = userAsync.whenData((user) => user);
     // final cards = ref.watch(cardsProvider2);
     final bal = card.balance;
     final formattedAmount = NumberFormat.currency(
-      symbol: user!.currency.currencyIcon,
+      symbol: user.value!.currency.currencyIcon,
       decimalDigits: 2,
     ).format(bal);
     return Container(

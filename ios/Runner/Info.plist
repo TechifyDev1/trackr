@@ -7,6 +7,26 @@
 	<key>CFBundleDisplayName</key>
 	<string>Trackr</string>
 	<key>CFBundleExecutable</key>
+	<key>GIDClientID</key>
+	<!-- TODO Replace this value: -->
+	<!-- Copied from GoogleService-Info.plist key CLIENT_ID -->
+	<string>581234592964-m15th36capjtf8abojsbt8ecb31ojcm7.apps.googleusercontent.com</string>
+	<!-- Put me in the [my_project]/ios/Runner/Info.plist file -->
+	<!-- Google Sign-in Section -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- TODO Replace this value: -->
+				<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
+				<string>com.googleusercontent.apps.581234592964-m15th36capjtf8abojsbt8ecb31ojcm7</string>
+			</array>
+		</dict>
+	</array>
+	<!-- End of the Google Sign-in Section -->
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>

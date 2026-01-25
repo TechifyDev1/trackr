@@ -126,7 +126,7 @@ class Utils {
   }
 
   static Future<String> getInsight(Expense expense) async {
-    final url = Uri.parse("http://10.62.167.130:3000/insight");
+    final url = Uri.parse("https://trackr-backend-wheat.vercel.app/insight");
 
     try {
       final res = await http.post(
@@ -152,7 +152,7 @@ class Utils {
     WidgetRef ref, {
     void Function(String, {bool isDone})? onIntent,
   }) async {
-    final url = Uri.parse("http://10.62.167.130:3000/chat");
+    final url = Uri.parse("https://trackr-backend-wheat.vercel.app/chat");
     try {
       final res = await http.post(
         url,

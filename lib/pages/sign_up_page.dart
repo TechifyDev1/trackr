@@ -114,6 +114,38 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
+  void signUpWithGoogle(BuildContext context) async {
+    if (_loading) return;
+    setState(() => _loading = true);
+
+    try {
+      final res = await AuthService.instance.signUpWithGoogle();
+      if (res["status"] == "error") {
+        if (context.mounted) {
+          Utils.showDialog(
+            context: context,
+            message: res["message"] ?? "Google sign-in failed",
+            severity: Severity.high,
+          );
+        }
+      }
+      if (kDebugMode) print("Success Google sign up $res");
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (context.mounted) {
+        Utils.showDialog(
+          context: context,
+          message: e.toString(),
+          severity: Severity.high,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _loading = false);
+      }
+    }
+  }
+
   // void _validateEmail() {}
 
   // void _validateName() {
@@ -266,7 +298,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     width: double.infinity,
                     child: CupertinoButton(
                       color: CupertinoColors.darkBackgroundGray,
-                      onPressed: () {},
+                      onPressed: () {
+                        signUpWithGoogle(context);
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
