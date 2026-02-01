@@ -117,15 +117,7 @@ class AuthService {
       final GoogleSignIn googleSignIn = GoogleSignIn.instance;
       await googleSignIn.initialize();
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
-
-      if (googleUser == null) {
-        // User canceled the sign-in
-        return {
-          "status": "error",
-          "message": "Google sign-in was canceled",
-        };
-      }
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
 
       // Obtain Google authentication tokens
       final GoogleSignInAuthentication googleAuth = googleUser.authentication;
@@ -144,8 +136,9 @@ class AuthService {
       );
 
       // Sign in to Firebase
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
 
       final User? user = userCredential.user;
 
